@@ -80,7 +80,6 @@ Siga as instruções abaixo para configurar e executar o ambiente de desenvolvim
 
 ### Pré-requisitos
 
-- Java JDK 21 ou superior
 - Node.js v20 ou superior
 - Um gerenciador de pacotes (npm ou yarn)
 - MySQL 8
