@@ -31,21 +31,21 @@ Para a construção deste projeto, foram selecionadas tecnologias modernas e rob
 
 ### Frontend
 
-| Tecnologia | Versão | Descrição |
-| :--- | :--- | :--- |
-| **HTML5** | `5` | Linguagem de marcação para a estrutura das páginas. |
-| **CSS3** | `3` | Folhas de estilo para o design e a responsividade. |
-| **JavaScript**| `ES2025` | Linguagem de programação para interatividade do lado do cliente.|
-| **React** | `19.x` | Biblioteca JavaScript para a construção de interfaces de usuário. |
-| **Vue.js** | `3.x` | Framework progressivo para a construção de interfaces de usuário. |
+| Tecnologia     | Versão   | Descrição                                                         |
+| :------------- | :------- | :---------------------------------------------------------------- |
+| **HTML5**      | `5`      | Linguagem de marcação para a estrutura das páginas.               |
+| **CSS3**       | `3`      | Folhas de estilo para o design e a responsividade.                |
+| **JavaScript** | `ES2025` | Linguagem de programação para interatividade do lado do cliente.  |
+| **React**      | `19.x`   | Biblioteca JavaScript para a construção de interfaces de usuário. |
+| **Vue.js**     | `3.x`    | Framework progressivo para a construção de interfaces de usuário. |
 
 ### Backend
 
-| Tecnologia | Versão | Descrição |
-| :--- | :--- | :--- |
-| **JavaScript** | `21 (LTS)` | Linguagem de programação para o desenvolvimento do servidor. |
-| **Node.js**| `3.x` | Framework para simplificar a criação de aplicações JavaScript. |
-| **MySQL** | `8.x` | Sistema de Gerenciamento de Banco de Dados Relacional. |
+| Tecnologia     | Versão     | Descrição                                                      |
+| :------------- | :--------- | :------------------------------------------------------------- |
+| **JavaScript** | `21 (LTS)` | Linguagem de programação para o desenvolvimento do servidor.   |
+| **Node.js**    | `3.x`      | Framework para simplificar a criação de aplicações JavaScript. |
+| **MySQL**      | `8.x`      | Sistema de Gerenciamento de Banco de Dados Relacional.         |
 
 ---
 
@@ -54,16 +54,19 @@ Para a construção deste projeto, foram selecionadas tecnologias modernas e rob
 O sistema contará com as seguintes funcionalidades principais:
 
 - **Módulo de Estoque:**
+
   - [ ] Cadastro, edição e remoção de veículos.
   - [ ] Consulta detalhada de veículos com filtros (marca, modelo, ano, etc.).
   - [ ] Controle de status (disponível, vendido, em manutenção).
 
 - **Módulo de Vendas:**
+
   - [ ] Registro de propostas e negociações.
   - [ ] Cadastro de clientes.
   - [ ] Geração de contratos de venda.
 
 - **Dashboard Gerencial:**
+
   - [ ] Relatórios de vendas por período.
   - [ ] Métricas de desempenho dos vendedores.
   - [ ] Visão geral do faturamento.
@@ -90,7 +93,9 @@ Siga as instruções abaixo para configurar e executar o ambiente de desenvolvim
 git clone [https://github.com/guilirio/Projeto-ES.git](https://github.com/guilirio/Projeto-ES.git)
 cd trio-bit-garage
 ```
+
 ### 2. Configurar o Back-End
+
 ```bash
 # Navegue até a pasta do backend
 cd backend
@@ -101,7 +106,9 @@ npm install
 # Execute a aplicação
 npm start
 ```
+
 ### 3. Configurar o Front-End
+
 ```bash
 # Navegue até a pasta do frontend
 cd ../frontend
@@ -112,12 +119,13 @@ npm install
 # Execute a aplicação
 npm start
 ```
+
 ---
 
 ## Equipe
 
-| Nome do Integrante | Matrícula | GitHub |
-| :--- | :--- | :--- |
+| Nome do Integrante      | Matrícula | GitHub                                   |
+| :---------------------- | :-------- | :--------------------------------------- |
 | Guilherme Lirio Miranda | 202410367 | [@guilirio](https://github.com/guilirio) |
-| Fábio Damas Valim | - | [@usuario](https://github.com/) |
-| Caio Finnochio Martins | 202410377 | [@caiobfm](https://github.com/caiobfm) |
+| Fábio Damas Valim       | 202410372 | [@usuario](https://github.com/)          |
+| Caio Finnochio Martins  | 202410377 | [@caiobfm](https://github.com/caiobfm)   |
