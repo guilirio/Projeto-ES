@@ -43,8 +43,8 @@ Para a construção deste projeto, foram selecionadas tecnologias modernas e rob
 
 | Tecnologia | Versão | Descrição |
 | :--- | :--- | :--- |
-| **Java** | `21 (LTS)` | Linguagem de programação para o desenvolvimento do servidor. |
-| **Spring Boot**| `3.x` | Framework para simplificar a criação de aplicações Java. |
+| **JavaScript** | `21 (LTS)` | Linguagem de programação para o desenvolvimento do servidor. |
+| **Node.js**| `3.x` | Framework para simplificar a criação de aplicações JavaScript. |
 | **MySQL** | `8.x` | Sistema de Gerenciamento de Banco de Dados Relacional. |
 
 ---
@@ -96,11 +96,11 @@ cd trio-bit-garage
 # Navegue até a pasta do backend
 cd backend
 
-# Instale as dependências (Maven ou Gradle)
-./mvnw clean install
+# Instale as dependências
+npm install
 
 # Execute a aplicação
-./mvnw spring-boot:run
+npm start
 ```
 ### 3. Configurar o Front-End
 ```bash
@@ -121,4 +121,4 @@ npm start
 | :--- | :--- | :--- |
 | Guilherme Lirio Miranda | 202410367 | [@guilirio](https://github.com/guilirio) |
 | Fábio Damas Valim | - | [@usuario](https://github.com/) |
-| Caio Finnochio Martins | - | [@usuario](https://github.com/) |
+| Caio Finnochio Martins | 202410377 | [@caiobfm](https://github.com/caiobfm) |
