@@ -127,5 +127,5 @@ npm start
 | Nome do Integrante      | Matrícula | GitHub                                   |
 | :---------------------- | :-------- | :--------------------------------------- |
 | Guilherme Lirio Miranda | 202410367 | [@guilirio](https://github.com/guilirio) |
-| Fábio Damas Valim       | 202410372 | [@usuario](https://github.com/)          |
+| Fábio Damas Valim       | 202410372 | [@fabiovalim](https://github.com/fabiovalim)          |
 | Caio Finnochio Martins  | 202410377 | [@caiobfm](https://github.com/caiobfm)   |
