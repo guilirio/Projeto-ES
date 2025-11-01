@@ -33,19 +33,19 @@ Para a construção deste projeto, foram selecionadas tecnologias modernas e rob
 
 | Tecnologia     | Versão   | Descrição                                                         |
 | :------------- | :------- | :---------------------------------------------------------------- |
-| **HTML5**      | `5`      | Linguagem de marcação para a estrutura das páginas.               |
-| **CSS3**       | `3`      | Folhas de estilo para o design e a responsividade.                |
-| **JavaScript** | `ES2025` | Linguagem de programação para interatividade do lado do cliente.  |
-| **React**      | `19.x`   | Biblioteca JavaScript para a construção de interfaces de usuário. |
-| **Vue.js**     | `3.x`    | Framework progressivo para a construção de interfaces de usuário. |
+| ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)      | `5`      | Linguagem de marcação para a estrutura das páginas.               |
+| ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)       | `3`      | Folhas de estilo para o design e a responsividade.                |
+| ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black) | `ES2025` | Linguagem de programação para interatividade do lado do cliente.  |
+| ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)     | `19.x`   | Biblioteca JavaScript para a construção de interfaces de usuário. |
+|![Vue.js](https://img.shields.io/badge/Vue.js-35495E?style=for-the-badge&logo=vuedotjs&logoColor=4FC08D)     | `3.x`    | Framework progressivo para a construção de interfaces de usuário. |
 
 ### Backend
 
 | Tecnologia     | Versão     | Descrição                                                      |
 | :------------- | :--------- | :------------------------------------------------------------- |
-| **JavaScript** | `21 (LTS)` | Linguagem de programação para o desenvolvimento do servidor.   |
-| **Node.js**    | `3.x`      | Framework para simplificar a criação de aplicações JavaScript. |
-| **MySQL**      | `8.x`      | Sistema de Gerenciamento de Banco de Dados Relacional.         |
+| ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)| `21 (LTS)` | Linguagem de programação para o desenvolvimento do servidor.   |
+| ![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)    | `3.x`      | Framework para simplificar a criação de aplicações JavaScript. |
+| ![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)     | `8.x`      | Sistema de Gerenciamento de Banco de Dados Relacional.         |
 
 ---
 
@@ -76,6 +76,17 @@ O sistema contará com as seguintes funcionalidades principais:
   - [ ] Controle de acesso baseado no perfil do usuário.
 
 ---
+
+## Estrutura de pastas do projeto
+
+```bash
+
+├── app/                   # Código principal da aplicação
+│    ├── backend/          # Aplicação backend (Node.js, Mysql, etc.)
+│    └── frontend/         # Aplicação frontend (React, Vue, etc.)
+├── docs/                  # Documentação do projeto para disciplina
+└── README.md           
+```
 
 ## Como Executar o Projeto
 

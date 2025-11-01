@@ -1,0 +1,91 @@
+============================ REQUISITOS FUNCIONAIS ============================
+
+[  ] RF001 - Realizar Login no Sistema
+    Tabelas: Usuário
+    Descrição: Permitir que usuários autorizados acessem o sistema através de credenciais válidas
+
+
+[  ] RF002 - Cadastrar Veículo
+    Tabelas: Veículo
+    Descrição: Permitir o registro de novos veículos no sistema
+
+[  ] RF003 - Consultar Veículo
+    Tabelas: Veículo
+    Descrição: Permitir a busca e visualização de informações dos veículos cadastrados
+
+[  ] RF004 - Alterar Veículo
+    Tabelas: Veículo
+    Descrição: Permitir a atualização de dados de veículos existentes
+
+[  ] RF005 - Excluir Veículo
+    Tabelas: Veículo
+    Descrição: Permitir a remoção lógica/física de veículos do sistema
+
+[  ] RF006 - Cadastrar Cliente
+    Tabelas: Cliente
+    Descrição: Permitir o registro de novos clientes no sistema
+
+[  ] RF007 - Consultar Cliente
+    Tabelas: Cliente
+    Descrição: Permitir a busca e visualização de dados dos clientes cadastrados
+
+[  ] RF008 - Alterar Cliente
+    Tabelas: Cliente
+    Descrição: Permitir a atualização de informações de clientes existentes
+
+[  ] RF009 - Excluir Cliente
+    Tabelas: Cliente
+    Descrição: Permitir a remoção lógica/física de clientes do sistema
+
+[  ] RF010 - Registrar Locação
+    Tabelas: Locação, Cliente, Veículo
+    Descrição: Permitir o registro de uma nova locação vinculando cliente e veículo
+
+[  ] RF011 - Consultar Locação
+    Tabelas: Locação, Cliente, Veículo
+    Descrição: Permitir a busca e visualização de locações com dados do cliente e veículo
+
+[  ] RF012 - Alterar Locação
+    Tabelas: Locação, Cliente, Veículo
+    Descrição: Permitir a modificação de dados de locações existentes
+
+[  ] RF013 - Cancelar Locação
+    Tabelas: Locação, Cliente, Veículo
+    Descrição: Permitir o cancelamento de locações registradas
+
+[  ] RF014 - Registrar Pagamento
+    Tabelas: Pagamento, Locação, Cliente
+    Descrição: Permitir o registro de pagamentos vinculados a locações
+
+[  ] RF015 - Consultar Pagamento
+    Tabelas: Pagamento, Locação, Cliente
+    Descrição: Permitir a visualização de histórico de pagamentos
+
+
+[  ] RF016 - Gerar Relatório de Locações
+    Tabelas: Locação, Cliente, Veículo, Pagamento
+    Descrição: Permitir a geração de relatórios gerenciais sobre locações realizadas
+
+============================ REQUISITOS NÃO FUNCIONAIS ============================
+
+[  ] RNF001 - Compatibilidade com Navegadores
+    Categoria: Portabilidade
+    Descrição: O sistema deve ser compatível com Google Chrome versão 100 ou superior.
+    Métrica: Teste de funcionalidade completa no navegador especificado.
+
+[  ] RNF002 - Criptografia de Dados Sensíveis
+    Categoria: Segurança
+    Descrição: O sistema deve armazenar senhas de usuários utilizando o algoritmo de hash bcrypt com fator de custo mínimo de 10 rounds.
+    Métrica: Validação através de auditoria de código e testes de penetração verificando ausência de senhas em texto plano.
+
+[  ] RNF003 - Disponibilidade do Sistema
+    Categoria: Confiabilidade
+    Descrição: O sistema deve manter disponibilidade de 99% durante o horário comercial (08:00 às 18:00, dias úteis), 
+    permitindo no máximo 7,2 horas de indisponibilidade não planejada por mês.
+    Métrica: Monitoramento através de ferramentas de uptime (ex: UptimeRobot) com registro de logs de disponibilidade.
+
+[  ] RNF004 - Padrão de Desenvolvimento Backend
+    Categoria: Manutenibilidade
+    Descrição: O backend do sistema deve ser desenvolvido utilizando Node.js versão 18 LTS ou superior com framework Express.js 
+    versão 4.18 ou superior, seguindo o padrão de arquitetura MVC (Model-View-Controller).
+    Métrica: Análise de estrutura de pastas e arquivos conforme padrão MVC documentado.
