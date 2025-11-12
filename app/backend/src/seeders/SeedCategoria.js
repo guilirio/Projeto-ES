@@ -5,26 +5,10 @@ const { sequelize, Categoria } = require('../models/index');
  */
 
 const categorias = [
-  {
-    nome: 'Econômico',
-    descricao: 'Carros 1.0 com ar-condicionado',
-    valor_diaria: 99.9,
-  },
-  {
-    nome: 'SUV',
-    descricao: 'Veículos utilitários esportivos',
-    valor_diaria: 179.9,
-  },
-  {
-    nome: 'Luxo',
-    descricao: 'Carros executivos ou esportivos de alto padrão',
-    valor_diaria: 349.9,
-  },
-  {
-    nome: 'Utilitário',
-    descricao: 'Veículos para transporte de carga (ex: pickup)',
-    valor_diaria: 219.9,
-  },
+  { nome: 'Econômico',  descricao: 'Carros 1.0 com ar-condicionado',                 valor_diaria: 99.9  },
+  { nome: 'SUV',        descricao: 'Veículos utilitários esportivos',                valor_diaria: 179.9 },
+  { nome: 'Luxo',       descricao: 'Carros executivos ou esportivos de alto padrão', valor_diaria: 349.9 },
+  { nome: 'Utilitário', descricao: 'Veículos para transporte de carga (ex: pickup)', valor_diaria: 219.9 }
 ];
 
 async function runSeed() {
