@@ -1,13 +1,13 @@
 require('dotenv').config();
 const express = require('express');
 const { sequelize } = require('./models/index');
-// const routes = require('./routes/index');
+const routes = require('./routes/index');
 
 const app = express();
 const PORT = process.env.PORT || 3333;
 
 app.use(express.json());
-// app.use(routes);
+app.use(routes);
 
 app.get("/", (req, res) => {
   res.send("Servidor rodando!");

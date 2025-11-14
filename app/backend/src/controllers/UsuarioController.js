@@ -4,7 +4,7 @@ const UsuarioController = {
   async create(req, res) {
     try {
       // Validação básica dos campos obrigatórios
-      const { nome, email, perfil, cpf, cnh, senha } = req.body;
+      const { nome, email, perfil, cpf, cnh, senha, telefone } = req.body;
       if (!nome || !email || !perfil || !cpf || !cnh || !senha) {
         return res
           .status(400)
@@ -48,13 +48,23 @@ const UsuarioController = {
   async update(req, res) {
     try {
       const { id } = req.params;
-      const usuarioAtualizado = await UsuarioService.update(id, req.body);
+      const { nome, email, perfil, cpf, cnh, senha, telefone } = req.body;
+
+      const usuarioAtualizado = await UsuarioService.update(id, {
+        nome,
+        email,
+        perfil,
+        cpf,
+        cnh,
+        senha, 
+        telefone
+      });
 
       if (!usuarioAtualizado) {
         return res.status(404).json({ error: 'Usuário não encontrado...' });
       }
 
-      return res.status(200).json(usuarioAtualizado);
+      return res.status(200).json({ message: 'Usuário atualizado com sucesso!', usuarioAtualizado});
     } catch (error) {
       return res.status(500).json({ error: error.message });
     }

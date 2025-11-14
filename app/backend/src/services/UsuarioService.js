@@ -22,15 +22,17 @@ const UsuarioService = {
   },
 
   update: async (id, data) => {
-    const [updated] = await Usuario.update(data, {
-      where: { id: id },
-    });
-
-    if (updated) {
-      const usuarioAtualizado = await Usuario.findByPk(id);
-      return usuarioAtualizado;
+    // Busca o usuario a ser atualizado
+    const usuario = await Usuario.findByPk(id);
+    
+    // Se não encontrar retorna null
+    if (!usuario) {
+      return null;
     }
-    return null; // Retorna null se não encontrou para atualizar
+
+    await usuario.update(data);
+
+    return usuario; // Se chegou ate aqui ele retorna o usuario atualizado
   },
 
   delete: async (id) => {
