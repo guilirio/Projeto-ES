@@ -79,7 +79,7 @@ const UsuarioController = {
         return res.status(404).json({ error: 'Usuário não encontrado...' });
       }
 
-      return res.status(204).send();
+      return res.status(200).send({ message: 'Usuário deletado com sucesso!' });
     } catch (error) {
       return res.status(500).json({ error: error.message });
     }
