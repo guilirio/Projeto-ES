@@ -49,34 +49,6 @@ Para a construção deste projeto, foram selecionadas tecnologias modernas e rob
 
 ---
 
-## Funcionalidades
-
-O sistema contará com as seguintes funcionalidades principais:
-
-- **Módulo de Estoque:**
-
-  - [ ] Cadastro, edição e remoção de veículos.
-  - [ ] Consulta detalhada de veículos com filtros (marca, modelo, ano, etc.).
-  - [ ] Controle de status (disponível, vendido, em manutenção).
-
-- **Módulo de Vendas:**
-
-  - [ ] Registro de propostas e negociações.
-  - [ ] Cadastro de clientes.
-  - [ ] Geração de contratos de venda.
-
-- **Dashboard Gerencial:**
-
-  - [ ] Relatórios de vendas por período.
-  - [ ] Métricas de desempenho dos vendedores.
-  - [ ] Visão geral do faturamento.
-
-- **Módulo de Autenticação:**
-  - [ ] Login e Logout de usuários do sistema (vendedores, gerentes).
-  - [ ] Controle de acesso baseado no perfil do usuário.
-
----
-
 ## Estrutura de pastas do projeto
 
 ```bash
@@ -105,17 +77,56 @@ git clone [https://github.com/guilirio/Projeto-ES.git](https://github.com/guilir
 cd trio-bit-garage
 ```
 
-### 2. Configurar o Back-End
+### 2. Rodar o Back-End
 
+- Comandos a serem dados no terminal ( na ordem ):
 ```bash
 # Navegue até a pasta do backend
 cd backend
-
+```
+```bash
 # Instale as dependências
 npm install
-
+```
+```bash
 # Execute a aplicação
-npm start
+npm run dev
+```
+
+### ⚠️ Atenção:
+- Para rodar o projeto Backend deve haver um arquivo chamado `.env` dentro da pasta `/backend` com as seguintes variáveis de ambiente: 
+
+| Variável      | Descrição | Valor      |
+| :---------------------- | :-------- | :--------------------------------------- |
+| PORT | Porta em que o servidor estará rodando | 3333
+| DB_HOST  | Host do servidos | localhost |
+| DB_USER  | Nome de usuário do banco de dados | root   |
+| DB_PASS  | Senha do seu banco de dados |  ( sua senha )   |
+| DB_NAME  | Nome do banco de dados | trio_bit_garage_db   |
+| DB_DIALECT  | - | mysql   |
+
+#### Exemplo do meu arquivo `.env`:
+
+```javascript
+// Você deve modificar alguns valores para o seu caso pessoal (ex: sua senha do banco de dados)
+
+PORT=3333
+DB_HOST=localhost
+DB_USER=root
+DB_PASS=10203040
+DB_NAME=trio_bit_garage_db
+DB_DIALECT=mysql
+```
+
+### ⚠️ Atenção:
+- Para rodar o projeto backend é necessário que o banco de dados já esteja criado na sua máquina, para isso, rode o script (disponível em `backend/database`) em algum editor sql para criar o banco de dados.
+
+#### Popular registros no banco de dados
+
+```bash
+# Esse comando irá popular o banco de dados com vários registros
+
+npm run seed
 ```
 
 ### 3. Configurar o Front-End
