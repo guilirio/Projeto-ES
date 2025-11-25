@@ -8,6 +8,7 @@ Projeto desenvolvido para a disciplina de Engenharia de Software. Este sistema v
 - [A Dor do Cliente](#a-dor-do-cliente)
 - [Tecnologias Utilizadas](#tecnologias-utilizadas)
 - [Regras de Uso do Git](#regras-de-uso-do-git)
+- [Estrutura de Pastas do Projeto](#estrutura-de-pastas-do-projeto)
 - [Funcionalidades](#funcionalidades)
 - [Como Executar o Projeto](#como-executar-o-projeto)
 - [Equipe](#equipe)
