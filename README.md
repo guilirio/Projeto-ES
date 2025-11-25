@@ -7,6 +7,7 @@ Projeto desenvolvido para a disciplina de Engenharia de Software. Este sistema v
 - [Visão Geral do Projeto](#visão-geral-do-projeto)
 - [A Dor do Cliente](#a-dor-do-cliente)
 - [Tecnologias Utilizadas](#tecnologias-utilizadas)
+- [Regras de Uso do Git](#regras-de-uso-do-git)
 - [Funcionalidades](#funcionalidades)
 - [Como Executar o Projeto](#como-executar-o-projeto)
 - [Equipe](#equipe)
@@ -49,7 +50,62 @@ Para a construção deste projeto, foram selecionadas tecnologias modernas e rob
 
 ---
 
-## Estrutura de pastas do projeto
+## Regras de Uso do Git
+
+Esta seção descreve as diretrizes que a equipe deve seguir ao utilizar o Git durante o desenvolvimento do projeto "Trio Bit Garage".
+
+### 1. Estrutura de Branches
+
+Utilizaremos o modelo **Git Flow**, onde as branches terão a seguinte estrutura:
+
+- **`main`**: A branch principal, que contém a versão estável do sistema.
+- **`dev`**: A branch de desenvolvimento, onde novas funcionalidades serão integradas antes de serem movidas para a `main`.
+- **`feature/<nome-da-funcionalidade>`**: Branches criadas para o desenvolvimento de novas funcionalidades.
+- **`hotfix/<nome-da-correção>`**: Branches para correções rápidas diretamente na versão de produção.
+- **`release/<nome-da-versão>`**: Branches para preparar novas versões para produção.
+
+### 2. Regras de Commit
+
+- **Mensagem de Commit**: Cada commit deve ter uma mensagem clara e concisa, seguindo o formato **Conventional Commits**:
+  - `feat: Adiciona nova funcionalidade`
+  - `fix: Corrige bug`
+  - `docs: Atualiza documentação do projeto`
+  - `refactor: Refatoração do projeto (sem mudar a parte funcional)`
+  - `test: Implementação de testes`
+  - `chore: Tarefas internas/configurações`
+- **Escopo**: Caso o commit se refira a uma parte específica do projeto, utilize um escopo entre parênteses, como:
+  - `feat(backend): Adiciona suporte a novos endpoints`
+- **Comitar frequentemente**: Não espere muito para fazer commits. Comite frequentemente as mudanças, mas sempre com uma mensagem clara de o que foi feito.
+
+### 3. Resolução de Conflitos
+
+- **Antes de fazer um merge**, sempre certifique-se de atualizar sua branch com as últimas mudanças da branch principal (`dev` ou `main`).
+- **Em caso de conflitos**, resolva-os localmente e depois faça o commit para concluir o merge.
+
+### 4. Estratégia de Merge
+
+- **Pull Requests (PR)**: Todos os merges para as branches principais devem ser feitos por meio de pull requests. Isso garante revisão de código (pelos demais colaboradores) e manutenção da qualidade.
+- **Revisão de código**: Cada pull request precisa passar por uma revisão de código. A pessoa que abrir o PR deve marcar os responsáveis pela revisão.
+
+### 5. Git Ignore
+
+Inclua os arquivos desnecessários no `.gitignore` para evitar o versionamento de arquivos temporários ou de configuração local, como:
+
+- Arquivos de log
+- Arquivos de configuração local (`.env`)
+- Dependências de pacotes (se não forem necessárias no repositório)
+
+Aqui está um exemplo básico de `.gitignore`:
+
+```gitignore
+node_modules/
+.env
+.DS_Store
+```
+
+---
+
+## Estrutura de Pastas do Projeto
 
 ```bash
 
@@ -59,6 +115,8 @@ Para a construção deste projeto, foram selecionadas tecnologias modernas e rob
 ├── docs/                  # Documentação do projeto para disciplina
 └── README.md
 ```
+
+---
 
 ## Como Executar o Projeto
 
