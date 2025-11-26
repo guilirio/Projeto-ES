@@ -1,4 +1,4 @@
-const { sequelize, Categoria, Usuario, Veiculo, Locacao } = require('../models/index');
+const { sequelize, Categoria, Usuario, Veiculo, Locacao, Pagamento } = require('../models/index');
 
 /**
  * Arquivo que tem o objetivo de popular algumas tabelas do banco de dados"
@@ -44,6 +44,13 @@ const locacoes = [
   { data_retirada:'2025-04-01', data_devolucao:'2025-04-05', valor_total:610.00, status:'ATIVA',     Veiculo_id:5, Usuario_id:7 }
 ];
 
+const pagamentos = [
+  { Locacao_id:2, valor_pago:490, metodo_pagamento:'PIX' },
+  { Locacao_id:2, valor_pago:490, metodo_pagamento:'DINHEIRO' },
+  { Locacao_id:4, valor_pago:305, metodo_pagamento:'CARTAO CREDITO' },
+  { Locacao_id:4, valor_pago:305, metodo_pagamento:'CARTAO CREDITO' },
+];
+
 async function runSeed() {
   try {
     await sequelize.authenticate();
@@ -79,6 +86,12 @@ async function runSeed() {
     if(count == 0) {
       await Locacao.bulkCreate(locacoes);
       console.log('[ OK ] Locacoes inseridos com sucesso!');
+    }
+
+    count = await Pagamento.count();
+    if(count == 0) {
+      await Pagamento.bulkCreate(pagamentos);
+      console.log('[ OK ] Pagamentos inseridos com sucesso!');
     }
 
   } catch (error) {
