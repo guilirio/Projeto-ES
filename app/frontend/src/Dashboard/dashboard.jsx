@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './dashboard.css';
 import logoTrio from '../assets/logo.svg';
 
@@ -10,6 +11,7 @@ const IconPayment = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="
 const IconCarRental = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1 4-10z"></path></svg>;
 
 const Dashboard = ({ onLogout }) => {
+  const navigate = useNavigate();
   const [showDropdown, setShowDropdown] = useState(false);
 
   return (
@@ -28,7 +30,8 @@ const Dashboard = ({ onLogout }) => {
 
           <div className="menu-label">MENU</div>
           
-          <div className="menu-item">
+          {/* Navegação adicionada: Redireciona para /clients */}
+          <div className="menu-item" onClick={() => navigate('/clients')}>
             <IconClients />
             <span>Clientes</span>
           </div>
@@ -133,7 +136,7 @@ const Dashboard = ({ onLogout }) => {
             </table>
           </div>
 
-          {/* Lista de Clientes (SUBSTITUINDO FUNCIONÁRIOS) */}
+          {/* Lista de Clientes */}
           <div className="card wide-card">
             <div className="card-header">
               <h3>Lista de Clientes</h3>
@@ -190,7 +193,6 @@ const Dashboard = ({ onLogout }) => {
               </div>
             </div>
           </div>
-
         </div>
       </main>
     </div>

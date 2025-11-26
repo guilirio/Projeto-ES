@@ -2,12 +2,11 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, useNavigate, Navigate } from 'react-router-dom';
 import './App.css';
 import Login from './Login/login.jsx';
-// Certifique-se de que o caminho abaixo corresponde onde você salvou o arquivo Forgot.jsx
 import Forgot from './Forgot/Forgot.jsx'; 
-// Importando o novo componente de Registro
 import Register from './Register/Register.jsx';
-
 import Dashboard from './Dashboard/dashboard.jsx';
+// Importar o componente de Clientes
+import Clients from './Clients/clients.jsx';
 
 // Wrapper para injetar a navegação no componente Login
 const LoginScreen = () => {
@@ -16,7 +15,6 @@ const LoginScreen = () => {
     <Login 
       onForgotPassword={() => navigate('/forgot')} 
       onRegister={() => navigate('/register')} 
-      // Adicionei esta prop para você conectar no botão "Entrar" do Login.jsx se desejar
       onLoginSuccess={() => navigate('/dashboard')}
     />
   );
@@ -36,21 +34,27 @@ const ForgotScreen = () => {
 // Wrapper para injetar a navegação no componente Register
 const RegisterScreen = () => {
   const navigate = useNavigate();
-  // Alterado para navegar para /login ao clicar em "Entrar"
   return <Register onLogin={() => navigate('/login')} />;
 };
 
-// Wrapper para o Dashboard para lidar com o Logout
+// Wrapper para o Dashboard
 const DashboardScreen = () => {
   const navigate = useNavigate();
-  
   const handleLogout = () => {
-    // Aqui você pode limpar tokens ou estados de sessão
     console.log("Logout efetuado");
     navigate('/login');
   };
-
   return <Dashboard onLogout={handleLogout} />;
+};
+
+// Novo Wrapper para a tela de Clientes
+const ClientsScreen = () => {
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    console.log("Logout efetuado");
+    navigate('/login');
+  };
+  return <Clients onLogout={handleLogout} />;
 };
 
 function App() {
@@ -61,17 +65,16 @@ function App() {
           {/* Redireciona a raiz "/" para "/login" automaticamente */}
           <Route path="/" element={<Navigate to="/login" replace />} />
 
-          {/* Rota principal de Login definida como /login */}
+          {/* Rotas de Autenticação */}
           <Route path="/login" element={<LoginScreen />} />
-          
-          {/* Rota de recuperação de senha */}
           <Route path="/forgot" element={<ForgotScreen />} />
-
-          {/* Rota de Cadastro */}
           <Route path="/register" element={<RegisterScreen />} />
 
-          {/* Rota do Dashboard CORRIGIDA */}
+          {/* Rota do Dashboard */}
           <Route path="/dashboard" element={<DashboardScreen />} />
+
+          {/* Rota de Clientes */}
+          <Route path="/clients" element={<ClientsScreen />} />
         </Routes>
       </BrowserRouter>
     </div>

@@ -1,0 +1,210 @@
+/* Reutilizando base do dashboard.css se importado globalmente */
+:root {
+  --primary-orange: #FF914D;
+  --primary-orange-hover: #e67e3a;
+  --bg-dashboard: #F4F7F9;
+  --bg-white: #FFFFFF;
+  --text-dark: #333333;
+  --text-grey: #666666;
+  --border-color: #E0E0E0;
+}
+
+/* Header da Página (Título e Ícone) */
+.header-page-title {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.title-icon {
+  width: 45px;
+  height: 45px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+.orange-bg { background-color: #FFF3E0; color: #FF9800; }
+
+/* Card de Filtros e Controles */
+.clients-filters-card {
+  background-color: var(--bg-white);
+  padding: 20px 30px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+  gap: 20px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+}
+
+.filter-item { display: flex; flex-direction: column; gap: 8px; }
+.filter-item label { font-size: 0.85rem; font-weight: 600; color: var(--text-dark); }
+
+/* Input de Pesquisa */
+.input-wrapper { position: relative; width: 300px; }
+.input-wrapper input {
+  width: 100%; padding: 10px 35px 10px 15px;
+  border: 1px solid #eee; border-radius: 6px; font-size: 0.9rem; color: var(--text-grey);
+}
+.search-icon { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #999; }
+
+/* Contador Total */
+.total-counter { text-align: center; padding: 0 20px; border-left: 1px solid #eee; border-right: 1px solid #eee; }
+.total-counter h3 { margin: 0; font-size: 1.6rem; color: var(--text-dark); }
+.total-counter span { font-size: 0.85rem; color: var(--text-grey); }
+
+/* Dropdown Filtro */
+.dropdown-filter select {
+  width: 150px; padding: 10px; border: 1px solid #eee;
+  border-radius: 6px; background-color: #f9f9f9; color: var(--text-grey);
+  cursor: pointer;
+}
+
+/* Botão Novo Cliente */
+.btn-new-client {
+  background-color: var(--primary-orange); color: white; border: none;
+  padding: 12px 25px; border-radius: 6px; font-weight: 600; cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-new-client:hover { background-color: var(--primary-orange-hover); }
+
+/* --- Estilos do Formulário de Cadastro --- */
+.client-form-container {
+  background-color: var(--bg-white);
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+  width: 100%;
+  max-width: 800px; /* Limita largura para melhor leitura */
+  margin: 0 auto; /* Centraliza se houver espaço */
+}
+
+.client-form {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.form-row {
+  display: flex;
+  gap: 20px;
+}
+
+.form-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group.full-width {
+  width: 100%;
+}
+
+.form-group label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-dark);
+}
+
+.form-group input {
+  padding: 12px 15px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 1rem;
+  color: var(--text-dark);
+  background-color: #fafafa;
+  transition: border 0.3s;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--primary-orange);
+  background-color: #fff;
+}
+
+.form-actions-bottom {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+.btn-save {
+  background-color: var(--primary-orange);
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+.btn-save:hover { background-color: var(--primary-orange-hover); }
+
+.btn-cancel {
+  background-color: transparent;
+  color: var(--text-grey);
+  border: 1px solid #ddd;
+  padding: 12px 30px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+.btn-cancel:hover { background-color: #f5f5f5; color: var(--text-dark); }
+
+/* --- Tabela --- */
+.clients-table-container {
+  background-color: var(--bg-white); padding: 25px; border-radius: 12px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.02); margin-bottom: 20px;
+}
+
+.table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.table-header h3 { margin: 0; font-size: 1.2rem; color: var(--text-dark); }
+.pagination-info { font-size: 0.9rem; color: var(--text-dark); }
+.highlight { border: 1px solid var(--primary-orange); padding: 2px 6px; border-radius: 4px; color: var(--primary-orange); font-weight: bold; margin: 0 5px; }
+
+.clients-table { width: 100%; border-collapse: collapse; }
+.clients-table th { text-align: left; color: #333; font-size: 0.9rem; padding-bottom: 15px; font-weight: 700; border-bottom: 1px solid #eee; }
+.clients-table td { padding: 15px 0; font-size: 0.9rem; color: var(--text-grey); border-bottom: 1px solid #f9f9f9; vertical-align: middle; }
+
+.link-ver-mais { color: var(--primary-orange); cursor: pointer; font-weight: 500; }
+.link-ver-mais:hover { text-decoration: underline; }
+
+/* Menu de Ação Flutuante (Popover) */
+.action-cell { position: relative; }
+.action-menu-popover {
+  position: absolute; right: 0; top: 30px; width: 120px;
+  background: white; border: 1px solid #eee; border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1); z-index: 10;
+}
+.popover-item { padding: 10px 15px; font-size: 0.9rem; color: var(--text-grey); cursor: pointer; transition: background 0.2s; }
+.popover-item:hover { background-color: #f5f5f5; color: var(--primary-orange); }
+
+/* Paginação */
+.pagination-controls { display: flex; gap: 8px; }
+.page-btn {
+  width: 36px; height: 36px; background: white; border: 1px solid #ddd;
+  color: var(--text-grey); display: flex; align-items: center; justify-content: center;
+  border-radius: 4px; cursor: pointer; transition: all 0.2s; font-size: 0.9rem;
+}
+.page-btn.active { background-color: var(--primary-orange); color: white; border-color: var(--primary-orange); }
+.page-btn:hover:not(.active) { background-color: #f0f0f0; }
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .clients-filters-card { flex-direction: column; align-items: flex-start; }
+  .total-counter { border: none; padding: 0; text-align: left; margin: 10px 0; }
+  .input-wrapper, .dropdown-filter select { width: 100%; }
+  
+  .form-row { flex-direction: column; gap: 15px; }
+  .client-form-container { padding: 20px; }
+}
