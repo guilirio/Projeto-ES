@@ -1,5 +1,6 @@
 const { Router } = require('express');
 const usuarioRoutes = require('./UsuarioRoutes');
+const authRoutes = require('./AuthRoutes');
 
 /**
  * Arquivo responsável por agrupar todas as rotas
@@ -8,6 +9,7 @@ const usuarioRoutes = require('./UsuarioRoutes');
 const router = Router();
 
 router.use(usuarioRoutes);
+router.use(authRoutes);
 // router.use(veiculoRoutes);
 // router.use(categoriaRoutes);
 // router.use(locacaoRoutes);
