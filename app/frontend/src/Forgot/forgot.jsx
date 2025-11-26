@@ -4,7 +4,8 @@ import './forgot.css';
 // Importando a logo do mesmo local
 import logoTrio from '../assets/logo.svg';
 
-const Forgot = () => {
+// Recebendo as props de navegação
+const Forgot = ({ onRegister, onBackToLogin }) => {
   const [email, setEmail] = useState('');
 
   const handleSubmit = (e) => {
@@ -23,7 +24,11 @@ const Forgot = () => {
           
           {/* Header do Card com Botão Criar Conta */}
           <header className="card-header">
-            <button type="button" className="btn-create-account">
+            <button 
+              type="button" 
+              className="btn-create-account"
+              onClick={onRegister} // Adicionado evento de clique para navegação
+            >
               Criar Conta
             </button>
           </header>

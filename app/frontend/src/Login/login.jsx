@@ -6,7 +6,8 @@ import './login.css';
 // Exemplo: Se login.jsx está em 'src/pages', e a logo em 'src/assets', use '../assets/logo.svg'
 import logoTrio from '../assets/logo.svg'; 
 
-const Login = () => {
+// Recebendo as funções de navegação via props
+const Login = ({ onForgotPassword, onRegister }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
@@ -42,7 +43,11 @@ const Login = () => {
           
           {/* Header do Card com Botão Criar Conta */}
           <header className="card-header">
-            <button type="button" className="btn-create-account">
+            <button 
+              type="button" 
+              className="btn-create-account"
+              onClick={onRegister} // Ação de navegação adicionada
+            >
               Criar Conta
             </button>
           </header>
@@ -117,7 +122,15 @@ const Login = () => {
                   <span className="checkmark"></span>
                   Lembrar
                 </label>
-                <a href="forgot" className="forgot-password">
+                {/* Link atualizado para usar a prop onForgotPassword */}
+                <a 
+                  href="#" 
+                  className="forgot-password"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onForgotPassword();
+                  }}
+                >
                   Eu esqueci minha senha
                 </a>
               </div>
