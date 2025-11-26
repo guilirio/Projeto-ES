@@ -3,9 +3,11 @@ import { BrowserRouter, Routes, Route, useNavigate, Navigate } from 'react-route
 import './App.css';
 import Login from './Login/login.jsx';
 // Certifique-se de que o caminho abaixo corresponde onde você salvou o arquivo Forgot.jsx
-import Forgot from './Forgot/forgot.jsx'; 
+import Forgot from './Forgot/Forgot.jsx'; 
 // Importando o novo componente de Registro
-import Register from './Register/register.jsx';
+import Register from './Register/Register.jsx';
+
+import Dashboard from './Dashboard/dashboard.jsx';
 
 // Wrapper para injetar a navegação no componente Login
 const LoginScreen = () => {
@@ -14,6 +16,8 @@ const LoginScreen = () => {
     <Login 
       onForgotPassword={() => navigate('/forgot')} 
       onRegister={() => navigate('/register')} 
+      // Adicionei esta prop para você conectar no botão "Entrar" do Login.jsx se desejar
+      onLoginSuccess={() => navigate('/dashboard')}
     />
   );
 };
@@ -36,6 +40,19 @@ const RegisterScreen = () => {
   return <Register onLogin={() => navigate('/login')} />;
 };
 
+// Wrapper para o Dashboard para lidar com o Logout
+const DashboardScreen = () => {
+  const navigate = useNavigate();
+  
+  const handleLogout = () => {
+    // Aqui você pode limpar tokens ou estados de sessão
+    console.log("Logout efetuado");
+    navigate('/login');
+  };
+
+  return <Dashboard onLogout={handleLogout} />;
+};
+
 function App() {
   return (
     <div className="App">
@@ -52,6 +69,9 @@ function App() {
 
           {/* Rota de Cadastro */}
           <Route path="/register" element={<RegisterScreen />} />
+
+          {/* Rota do Dashboard CORRIGIDA */}
+          <Route path="/dashboard" element={<DashboardScreen />} />
         </Routes>
       </BrowserRouter>
     </div>

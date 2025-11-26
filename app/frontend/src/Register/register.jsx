@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './register.css';
-import logoTrio from '../assets/logo.svg'; // Ajuste o caminho conforme sua estrutura
+import logoTrio from '../assets/logo.svg'; 
 
 const Register = ({ onLogin }) => {
   const [formData, setFormData] = useState({
@@ -17,12 +17,22 @@ const Register = ({ onLogin }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    // Validação simples de senha
     if (formData.password !== formData.confirmPassword) {
       alert("As senhas não coincidem!");
       return;
     }
+
     console.log('Dados de registro:', formData);
-    // Lógica de cadastro aqui
+    
+    // Aqui viria sua lógica de backend (axios.post, firebase, etc)
+    // ...
+
+    // Após sucesso no cadastro, redireciona para o Login:
+    if (onLogin) {
+      onLogin();
+    }
   };
 
   return (

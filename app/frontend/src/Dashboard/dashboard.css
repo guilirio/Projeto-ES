@@ -1,0 +1,365 @@
+:root {
+  --primary-orange: #FF914D;
+  --bg-dashboard: #F4F7F9;
+  --bg-white: #FFFFFF;
+  --text-dark: #333333;
+  --text-grey: #666666;
+  --status-green: #28C76F;
+  --status-orange: #FF9F43;
+  --status-red: #EA5455;
+}
+
+.dashboard-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--bg-dashboard);
+  font-family: 'Segoe UI', Roboto, sans-serif;
+}
+
+/* --- Sidebar (FIXA NA ESQUERDA) --- */
+.sidebar {
+  width: 260px;
+  background-color: var(--bg-white);
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #eee;
+  
+  /* Fixando a sidebar */
+  position: fixed;
+  height: 100%;
+  left: 0; 
+  top: 0;
+  z-index: 50; 
+}
+
+.sidebar-logo {
+  padding: 30px;
+  display: flex;
+  justify-content: center;
+}
+
+/* Logo Aumentada */
+.sidebar-logo img {
+  height: 120px; 
+  width: auto;
+  object-fit: contain;
+}
+
+.sidebar-menu {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.menu-label {
+  color: #999;
+  font-size: 0.75rem;
+  font-weight: bold;
+  margin: 20px 0 10px 15px;
+  text-transform: uppercase;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px 15px;
+  color: var(--text-grey);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+  font-size: 0.95rem;
+  margin-bottom: 5px;
+}
+
+.menu-item:hover {
+  background-color: #f9f9f9;
+  color: var(--primary-orange);
+}
+
+.menu-item.active {
+  background-color: rgba(255, 145, 77, 0.1); 
+  color: var(--primary-orange);
+  border-right: 3px solid var(--primary-orange);
+}
+
+/* --- Main Content --- */
+.main-content {
+  flex: 1;
+  /* Margem esquerda para compensar a sidebar fixa */
+  margin-left: 260px; 
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.top-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.header-welcome h2 {
+  font-size: 1.5rem;
+  color: var(--text-dark);
+  margin-bottom: 5px;
+}
+
+.header-welcome p {
+  color: var(--text-grey);
+  font-size: 0.9rem;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.btn-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-dark);
+  padding: 8px;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+
+.btn-icon:hover {
+  background-color: #eee;
+}
+
+/* User Profile & Dropdown */
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  position: relative;
+  padding: 5px 10px;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.user-profile:hover {
+  background-color: #eef2f5;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  text-align: right;
+}
+
+.user-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-dark);
+}
+
+.user-role {
+  font-size: 0.8rem;
+  color: var(--text-grey);
+}
+
+.chevron {
+  transition: transform 0.2s;
+}
+
+.chevron.rotate {
+  transform: rotate(180deg);
+}
+
+/* Dropdown Menu */
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 200px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  padding: 8px 0;
+  z-index: 100;
+  margin-top: 5px;
+  border: 1px solid #eee;
+}
+
+.dropdown-item {
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-dark);
+  font-size: 0.95rem;
+  transition: background 0.2s;
+}
+
+.dropdown-item:hover {
+  background-color: #f5f5f5;
+}
+
+.dropdown-item.logout {
+  color: var(--status-red);
+  border-top: 1px solid #eee;
+  margin-top: 5px;
+  padding-top: 12px;
+}
+
+/* --- Dashboard Grid --- */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+/* Cards */
+.card {
+  background-color: var(--bg-white);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+}
+
+.stat-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.stat-info h3 {
+  font-size: 2rem;
+  margin-bottom: 5px;
+  color: var(--text-dark);
+}
+
+.stat-label {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--text-grey);
+  margin-bottom: 10px;
+}
+
+.stat-trend {
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.stat-trend.positive { color: var(--status-green); }
+.stat-trend.negative { color: var(--status-red); }
+
+.stat-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.orange-bg { background-color: #FFF3E0; color: #FF9800; }
+.blue-bg { background-color: #E3F2FD; color: #2196F3; }
+.purple-bg { background-color: #F3E5F5; color: #9C27B0; }
+.green-bg { background-color: #E8F5E9; color: #4CAF50; }
+
+/* Tables */
+.wide-card {
+  grid-column: span 2;
+}
+
+.card-header {
+  margin-bottom: 20px;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 15px;
+}
+
+.card-header h3 {
+  font-size: 1.1rem;
+  color: var(--text-dark);
+}
+
+.dashboard-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.dashboard-table th {
+  text-align: left;
+  color: #999;
+  font-size: 0.85rem;
+  padding-bottom: 15px;
+  font-weight: 600;
+}
+
+.dashboard-table td {
+  padding: 12px 0;
+  font-size: 0.9rem;
+  color: var(--text-dark);
+  border-bottom: 1px solid #f9f9f9;
+}
+
+.status-pending { color: var(--status-orange); }
+.status-approved { color: var(--status-green); }
+
+/* Chart Card */
+.chart-card {
+  grid-column: span 2;
+}
+
+.chart-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.chart-legend ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 15px;
+}
+
+.chart-legend li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+  color: var(--text-grey);
+}
+
+.dot {
+  width: 8px;
+  height: 15px;
+  border-radius: 4px;
+}
+
+.dot.orange { background-color: var(--status-orange); }
+.dot.green { background-color: var(--status-green); }
+.dot.red { background-color: var(--status-red); }
+
+/* CSS Donut Chart */
+.donut-chart {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: conic-gradient(
+    var(--status-red) 0deg 36deg,     
+    var(--status-orange) 36deg 90deg, 
+    var(--status-green) 90deg 360deg  
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.donut-hole {
+  width: 90px;
+  height: 90px;
+  background-color: white;
+  border-radius: 50%;
+}
