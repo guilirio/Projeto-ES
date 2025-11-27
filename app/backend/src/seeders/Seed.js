@@ -24,9 +24,9 @@ const funcs = [
 ];
 
 const clientes = [
-  { nome:'Lucas Alberto Diniz',   email:'emailteste7@gmail.com', perfil:'CLIENTE', cpf:'54568652534', cnh:'586452451', telefone:'35948655625', senha:'10203040'},
-  { nome:'Clarisse Maia Santos',  email:'emailteste8@gmail.com', perfil:'CLIENTE', cpf:'45796545725', cnh:'142535478', telefone:'35945758656', senha:'10203040'},
-  { nome:'Alberto Paes Mesquita', email:'emailteste9@gmail.com', perfil:'CLIENTE', cpf:'97585212355', cnh:'245687954', telefone:'31845768595', senha:'10203040'},
+  { nome:'Lucas Alberto Diniz',   email:'emailteste7@gmail.com', perfil:'CLIENTE', cpf:'54568652534', cnh:'586452451', telefone:'35948655625'},
+  { nome:'Clarisse Maia Santos',  email:'emailteste8@gmail.com', perfil:'CLIENTE', cpf:'45796545725', cnh:'142535478', telefone:'35945758656'},
+  { nome:'Alberto Paes Mesquita', email:'emailteste9@gmail.com', perfil:'CLIENTE', cpf:'97585212355', cnh:'245687954', telefone:'31845768595'},
 ];
 
 const veiculos = [
