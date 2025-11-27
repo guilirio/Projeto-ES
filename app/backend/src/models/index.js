@@ -4,6 +4,7 @@ const CategoriaModel = require('./Categoria');
 const UsuarioModel = require('./Usuario');
 const VeiculoModel = require('./Veiculo');
 const LocacaoModel = require('./Locacao');
+const PagamentoModel = require('./Pagamento');
 
 const sequelize = new Sequelize(dbConfig);
 
@@ -11,8 +12,9 @@ CategoriaModel(sequelize);
 UsuarioModel(sequelize);
 VeiculoModel(sequelize);
 LocacaoModel(sequelize);
+PagamentoModel(sequelize);
 
-const { Categoria, Usuario, Veiculo, Locacao } = sequelize.models;
+const { Categoria, Usuario, Veiculo, Locacao, Pagamento } = sequelize.models;
 
 // ------------------------------------
 // ASSOCIAÇÕES DAS TABELAS
@@ -30,10 +32,15 @@ Locacao.belongsTo(Usuario, { foreignKey: 'Usuario_id' });
 Veiculo.hasMany(Locacao, { foreignKey: 'Veiculo_id' });
 Locacao.belongsTo(Veiculo, { foreignKey: 'Veiculo_id' });
 
+// Relação 1:N - Locacao tem muitos Pagamentos
+Locacao.hasMany(Pagamento, { foreignKey: 'Locacao_id' });
+Pagamento.belongsTo(Locacao, { foreignKey: 'Locacao_id' });
+
 module.exports = {
   sequelize,
   Categoria,
   Usuario,
   Veiculo,
   Locacao,
+  Pagamento,
 };
