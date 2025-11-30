@@ -3,6 +3,7 @@ const usuarioRoutes = require('./UsuarioRoutes');
 const authRoutes = require('./AuthRoutes');
 const veiculoRoutes = require('./VeiculoRoutes');
 const locacaoRoutes = require('./LocacaoRoutes');
+const pagamentoRoutes = require('./PagamentoRoutes');
 
 /**
  * Arquivo responsável por agrupar todas as rotas
@@ -14,5 +15,6 @@ router.use(usuarioRoutes);
 router.use(authRoutes);
 router.use(veiculoRoutes);
 router.use(locacaoRoutes);
+router.use(pagamentoRoutes);
 
 module.exports = router;
