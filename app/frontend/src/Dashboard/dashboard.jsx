@@ -56,7 +56,15 @@ const Dashboard = ({ onLogout }) => {
         <header className="top-header">
           <div className="header-welcome">
             <h2>Bem-vindo, Sr. Luke Skywalker</h2>
-            <p>Hoje é quarta-feira, 19 de novembro de 2025.</p>
+            <p>Hoje é {(() => {
+              const data = new Date().toLocaleDateString('pt-BR', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+              });
+              return data.charAt(0).toUpperCase() + data.slice(1);
+            })()}.</p>
           </div>
 
           <div className="header-actions">
