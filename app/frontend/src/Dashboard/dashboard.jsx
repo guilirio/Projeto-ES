@@ -35,15 +35,15 @@ const Dashboard = ({ onLogout }) => {
             <IconClients />
             <span>Clientes</span>
           </div>
-          <div className="menu-item">
+          <div className="menu-item" onClick={() => navigate('/locacoes')}>
             <IconCarRental />
             <span>Locação de Carros</span>
           </div>
-          <div className="menu-item">
+          <div className="menu-item" onClick={() => navigate('/veiculos')}>
             <IconCar />
             <span>Veículos</span>
           </div>
-          <div className="menu-item">
+          <div className="menu-item" onClick={() => navigate('/pagamentos')}>
             <IconPayment />
             <span>Pagamentos</span>
           </div>

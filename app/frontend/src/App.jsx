@@ -6,8 +6,11 @@ import Forgot from './Forgot/Forgot.jsx';
 import Register from './Register/Register.jsx';
 import Dashboard from './Dashboard/dashboard.jsx';
 import Clients from './Clients/clients.jsx';
-// Importação do componente de Veículo (Certifique-se que o arquivo criado está nesta pasta)
+// Importação do componente de Veículo
 import Veiculo from './Veiculo/veiculo.jsx'; 
+// --- NOVO: Importação do componente de Locação ---
+import Locacao from './Locacao/locacao.jsx'; 
+import Pagamento from './Pagamento/pagamento.jsx';
 
 // Wrapper para injetar a navegação no componente Login
 const LoginScreen = () => {
@@ -69,6 +72,25 @@ const VeiculoScreen = () => {
   return <Veiculo onLogout={handleLogout} />;
 };
 
+// --- NOVO: Wrapper para a tela de Locações ---
+const LocacaoScreen = () => {
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    console.log("Logout efetuado");
+    navigate('/login');
+  };
+  return <Locacao onLogout={handleLogout} />;
+};
+
+const PagamentoScreen = () => {
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    console.log("Logout efetuado");
+    navigate('/login');
+  };
+  return <Pagamento onLogout={handleLogout} />;
+};
+
 function App() {
   return (
     <div className="App">
@@ -88,6 +110,11 @@ function App() {
           
           {/* Rota Única para Veículos */}
           <Route path="/veiculos" element={<VeiculoScreen />} />
+
+          {/* --- NOVA ROTA: Locação de Veículos --- */}
+          <Route path="/locacoes" element={<LocacaoScreen />} />
+          {/* Rota para Pagamentos */}
+          <Route path="/pagamentos" element={<PagamentoScreen />} />
 
         </Routes>
       </BrowserRouter>

@@ -126,40 +126,46 @@ const Veiculo = ({ onLogout }) => {
     return map[status] || status;
   };
 
-  return (
-    <div className="dashboard-container">
-      {/* --- Sidebar Fixa (Igual ao Clients) --- */}
-      <aside className="sidebar">
-        <div className="sidebar-logo">
-           {/* Fallback se logoTrio não carregar */}
-           {logoTrio ? <img src={logoTrio} alt="Trio Bit Garage" /> : <h3>Trio Bit</h3>}
-        </div>
-        <nav className="sidebar-menu">
-          <div className="menu-item" onClick={() => navigate('/dashboard')}>
-            <IconDashboard />
-            <span>Dashboard</span>
-          </div>
-          <div className="menu-label">MENU</div>
-          <div className="menu-item" onClick={() => navigate('/clients')}>
-            <IconClients />
-            <span>Clientes</span>
-          </div>
-          <div className="menu-item">
-            <IconCarRental />
-            <span>Locação de Carros</span>
-          </div>
-          <div className="menu-item active"> {/* Ativo nesta tela */}
-            <IconCar />
-            <span>Veículos</span>
-          </div>
-          <div className="menu-item">
-            <IconPayment />
-            <span>Pagamentos</span>
-          </div>
-        </nav>
-      </aside>
+    return (
+        <div className="dashboard-container">
+        {/* --- Sidebar Fixa (Igual ao Clients) --- */}
+        <aside className="sidebar">
+            <div className="sidebar-logo">
+            {/* Fallback se logoTrio não carregar */}
+            {logoTrio ? <img src={logoTrio} alt="Trio Bit Garage" /> : <h3>Trio Bit</h3>}
+            </div>
+            <nav className="sidebar-menu">
+            <div className="menu-item" onClick={() => navigate('/dashboard')}>
+                <IconDashboard />
+                <span>Dashboard</span>
+            </div>
+            <div className="menu-label">MENU</div>
+            <div className="menu-item" onClick={() => navigate('/clients')}>
+                <IconClients />
+                <span>Clientes</span>
+            </div>
+            
+            {/* Adicionei um onClick placeholder aqui também, caso você crie essa rota no futuro */}
+            <div className="menu-item" onClick={() => navigate('/locacoes')}> 
+                <IconCarRental />
+                <span>Locação de Carros</span>
+            </div>
 
-      {/* --- Conteúdo Principal --- */}
+            {/* --- CORREÇÃO AQUI --- */}
+            {/* Adicionado o onClick para navegar para /veiculos */}
+            <div className="menu-item active" onClick={() => navigate('/veiculos')}> 
+                <IconCar />
+                <span>Veículos</span>
+            </div>
+
+            <div className="menu-item" onClick={() => navigate('/pagamentos')}>
+                <IconPayment />
+                <span>Pagamentos</span>
+            </div>
+            </nav>
+        </aside>
+
+    {/* --- Conteúdo Principal --- */}
       <main className="main-content">
         <header className="top-header">
           <div className="header-welcome">
@@ -304,7 +310,6 @@ const Veiculo = ({ onLogout }) => {
                     <option value="" disabled>Selecione a situação do veículo</option>
                     <option value="DISPONIVEL">Disponível</option>
                     <option value="ALUGADO">Alugado</option>
-                    <option value="MANUTENCAO">Manutenção</option>
                   </select>
                 </div>
               </div>
