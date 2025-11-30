@@ -5,8 +5,9 @@ import Login from './Login/login.jsx';
 import Forgot from './Forgot/Forgot.jsx'; 
 import Register from './Register/Register.jsx';
 import Dashboard from './Dashboard/dashboard.jsx';
-// Importar o componente de Clientes
 import Clients from './Clients/clients.jsx';
+// Importação do componente de Veículo (Certifique-se que o arquivo criado está nesta pasta)
+import Veiculo from './Veiculo/veiculo.jsx'; 
 
 // Wrapper para injetar a navegação no componente Login
 const LoginScreen = () => {
@@ -44,10 +45,11 @@ const DashboardScreen = () => {
     console.log("Logout efetuado");
     navigate('/login');
   };
-  return <Dashboard onLogout={handleLogout} />;
+  // Adicione a prop onNavigate para o Dashboard redirecionar
+  return <Dashboard onLogout={handleLogout} onNavigate={navigate} />;
 };
 
-// Novo Wrapper para a tela de Clientes
+// Wrapper para a tela de Clientes
 const ClientsScreen = () => {
   const navigate = useNavigate();
   const handleLogout = () => {
@@ -55,6 +57,16 @@ const ClientsScreen = () => {
     navigate('/login');
   };
   return <Clients onLogout={handleLogout} />;
+};
+
+// Wrapper simplificado para a tela de Veículos
+const VeiculoScreen = () => {
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    console.log("Logout efetuado");
+    navigate('/login');
+  };
+  return <Veiculo onLogout={handleLogout} />;
 };
 
 function App() {
@@ -70,11 +82,13 @@ function App() {
           <Route path="/forgot" element={<ForgotScreen />} />
           <Route path="/register" element={<RegisterScreen />} />
 
-          {/* Rota do Dashboard */}
+          {/* Rotas Protegidas (Dashboard e Funcionalidades) */}
           <Route path="/dashboard" element={<DashboardScreen />} />
-
-          {/* Rota de Clientes */}
           <Route path="/clients" element={<ClientsScreen />} />
+          
+          {/* Rota Única para Veículos */}
+          <Route path="/veiculos" element={<VeiculoScreen />} />
+
         </Routes>
       </BrowserRouter>
     </div>
