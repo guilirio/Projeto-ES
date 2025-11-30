@@ -1,11 +1,13 @@
 require('dotenv').config();
 const express = require('express');
+const cors = require('cors'); // Importante para o Frontend
 const { sequelize } = require('./models/index');
 const routes = require('./routes/index');
 
 const app = express();
 const PORT = process.env.PORT || 3333;
 
+app.use(cors()); // Habilita o acesso do Frontend
 app.use(express.json());
 app.use(routes);
 
@@ -16,7 +18,6 @@ app.get("/", (req, res) => {
 async function startServer() {
   try {
     await sequelize.authenticate();
-
     console.log('[ OK ] Conexão estabelecida com o banco de dados.');
 
     app.listen(PORT, () => {

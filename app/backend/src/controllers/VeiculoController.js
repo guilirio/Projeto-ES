@@ -16,7 +16,10 @@ const VeiculoController = {
       return res.status(201).json(novoVeiculo);
 
     } catch (error) {
-      // Erros de "Unique Constraint" (Placa duplicada) caem aqui
+      // Erros de "Unique Constraint" (Placa duplicada)
+      if (error.name === 'SequelizeUniqueConstraintError') {
+        return res.status(400).json({ error: 'Já existe um veículo com esta Placa ou Chassi.' });
+      }
       return res.status(500).json({ error: error.message });
     }
   },
@@ -63,7 +66,7 @@ const VeiculoController = {
     }
   },
 
-  // Deletar
+  // Deletar (COM TRATAMENTO DE ERRO MELHORADO)
   async delete(req, res) {
     try {
       const { id } = req.params;
@@ -75,6 +78,13 @@ const VeiculoController = {
 
       return res.status(204).send();
     } catch (error) {
+      // Detecta erro de chave estrangeira (Veículo está alugado/tem histórico)
+      if (error.name === 'SequelizeForeignKeyConstraintError') {
+        return res.status(400).json({ 
+          error: 'Não é possível excluir este veículo pois ele possui histórico de locações. Exclua as locações associadas primeiro.' 
+        });
+      }
+      
       return res.status(500).json({ error: error.message });
     }
   },

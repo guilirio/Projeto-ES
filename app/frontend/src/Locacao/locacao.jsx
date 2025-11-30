@@ -111,6 +111,32 @@ const Locacao = ({ onLogout }) => {
     }
   };
 
+  // --- Função para FINALIZAR (Excluir) a Locação ---
+  const handleFinalizar = async (id) => {
+    // Confirmação para evitar cliques acidentais
+    if (!window.confirm("Deseja realmente finalizar esta locação? O registro será excluído.")) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:3333/locacoes/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        alert("Locação finalizada com sucesso!");
+        fetchAllData(); // Atualiza a lista removendo o item excluído
+      } else {
+        const errorData = await response.json();
+        alert(`Erro ao finalizar: ${errorData.error}`);
+      }
+    } catch (error) {
+      console.error("Erro ao finalizar:", error);
+      alert("Erro de conexão ao tentar finalizar.");
+    }
+    setActiveMenuRow(null); // Fecha o menu
+  };
+
   // --- Filtro Local ---
   const filteredLocacoes = locacoes.filter((l) => {
     const clienteNome = l.Usuario?.nome || '';
@@ -369,9 +395,8 @@ const Locacao = ({ onLogout }) => {
                          <span className="link-ver-mais" onClick={() => toggleRowMenu(l.id)}>Ver mais</span>
                          {activeMenuRow === l.id && (
                            <div className="action-menu-popover">
-                             <div className="popover-item">Finalizar</div>
-                             <div className="popover-item">Cancelar</div>
-                             <div className="popover-item">Excluir</div>
+                             {/* Alteração solicitada: Apenas opção Finalizar que deleta o registro */}
+                             <div className="popover-item" onClick={() => handleFinalizar(l.id)}>Finalizar</div>
                            </div>
                          )}
                        </td>
