@@ -1,0 +1,223 @@
+/* --- Reutilizando base do Clients.css --- */
+:root {
+  --primary-orange: #FF914D;
+  --primary-orange-hover: #e67e3a;
+  --bg-dashboard: #F4F7F9;
+  --bg-white: #FFFFFF;
+  --text-dark: #333333;
+  --text-grey: #666666;
+  --border-color: #E0E0E0;
+}
+
+/* Layout Geral igual ao Dashboard/Clients */
+.dashboard-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--bg-dashboard);
+  font-family: 'Inter', sans-serif;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 250px;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #eee;
+  flex-shrink: 0;
+}
+.sidebar-logo {
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid #eee;
+}
+.sidebar-logo img { height: 40px; }
+.sidebar-menu { padding: 20px 0; }
+.menu-label {
+  padding: 10px 25px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #999;
+  letter-spacing: 0.5px;
+  margin-top: 10px;
+}
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 25px;
+  color: var(--text-grey);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+.menu-item:hover { color: var(--primary-orange); background-color: #fff5eb; }
+.menu-item.active {
+  color: var(--primary-orange);
+  background-color: #fff5eb;
+  border-right: 3px solid var(--primary-orange);
+}
+
+/* Conteúdo Principal */
+.main-content {
+  flex: 1;
+  padding: 30px;
+  overflow-y: auto;
+}
+
+/* Header */
+.top-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 30px;
+}
+.header-welcome h2 { margin-bottom: 5px; }
+.header-actions { display: flex; align-items: center; gap: 20px; }
+.btn-icon {
+  background: none; border: none; cursor: pointer; color: #999; position: relative;
+}
+.user-profile {
+  display: flex; align-items: center; gap: 10px; cursor: pointer; position: relative;
+  background: white; padding: 5px 15px 5px 5px; border-radius: 30px; border: 1px solid #eee;
+}
+.avatar {
+  width: 32px; height: 32px; background-color: #eee; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; color: #666;
+}
+.user-info { display: flex; flex-direction: column; font-size: 0.85rem; }
+.user-name { font-weight: 600; color: #333; }
+.user-role { font-size: 0.75rem; color: #999; }
+.chevron { color: #999; transition: transform 0.2s; }
+.chevron.rotate { transform: rotate(180deg); }
+
+/* Dropdown User */
+.dropdown-menu {
+  position: absolute; top: 50px; right: 0; background: white; width: 150px;
+  border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); overflow: hidden; z-index: 100;
+}
+.dropdown-item { padding: 10px 15px; font-size: 0.9rem; color: #555; cursor: pointer; }
+.dropdown-item:hover { background-color: #f5f5f5; }
+.dropdown-item.logout { color: #d32f2f; border-top: 1px solid #eee; }
+
+/* --- CARD DE FILTROS --- */
+.clients-filters-card {
+  background-color: var(--bg-white);
+  padding: 20px 30px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+  gap: 20px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+}
+.filter-item { display: flex; flex-direction: column; gap: 8px; }
+.filter-item label { font-size: 0.85rem; font-weight: 600; color: var(--text-dark); }
+
+.input-wrapper { position: relative; width: 300px; }
+.input-wrapper input {
+  width: 100%; padding: 10px 35px 10px 15px;
+  border: 1px solid #eee; border-radius: 6px; font-size: 0.9rem; color: var(--text-grey);
+}
+.search-icon { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #999; }
+
+.total-counter { text-align: center; padding: 0 20px; border-left: 1px solid #eee; border-right: 1px solid #eee; }
+.total-counter h3 { margin: 0; font-size: 1.6rem; color: var(--text-dark); }
+.total-counter span { font-size: 0.85rem; color: var(--text-grey); }
+
+.dropdown-filter select {
+  width: 150px; padding: 10px; border: 1px solid #eee;
+  border-radius: 6px; background-color: #f9f9f9; color: var(--text-grey); cursor: pointer;
+}
+
+.btn-new-client {
+  background-color: var(--primary-orange); color: white; border: none;
+  padding: 12px 25px; border-radius: 6px; font-weight: 600; cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-new-client:hover { background-color: var(--primary-orange-hover); }
+
+/* --- TABELA --- */
+.clients-table-container {
+  background-color: var(--bg-white); padding: 25px; border-radius: 12px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.02); margin-bottom: 20px;
+}
+.table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.table-header h3 { margin: 0; font-size: 1.2rem; color: var(--text-dark); }
+.pagination-info { font-size: 0.9rem; color: var(--text-dark); }
+.highlight { border: 1px solid var(--primary-orange); padding: 2px 6px; border-radius: 4px; color: var(--primary-orange); font-weight: bold; margin: 0 5px; }
+
+.clients-table { width: 100%; border-collapse: collapse; }
+.clients-table th { text-align: left; color: #333; font-size: 0.9rem; padding-bottom: 15px; font-weight: 700; border-bottom: 1px solid #eee; }
+.clients-table td { padding: 15px 0; font-size: 0.9rem; color: var(--text-grey); border-bottom: 1px solid #f9f9f9; vertical-align: middle; }
+
+/* Badge de Status Específico de Veículos */
+.status-badge { padding: 4px 0; font-weight: 500; font-size: 0.85rem; }
+.status-disponivel { color: #28a745; }
+.status-alugado { color: #F58634; }
+.status-manutencao { color: #dc3545; }
+
+.link-ver-mais { color: var(--primary-orange); cursor: pointer; font-weight: 500; }
+.link-ver-mais:hover { text-decoration: underline; }
+
+/* Menu Popover */
+.action-cell { position: relative; }
+.action-menu-popover {
+  position: absolute; right: 0; top: 30px; width: 120px;
+  background: white; border: 1px solid #eee; border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1); z-index: 10;
+}
+.popover-item { padding: 10px 15px; font-size: 0.9rem; color: var(--text-grey); cursor: pointer; transition: background 0.2s; }
+.popover-item:hover { background-color: #f5f5f5; color: var(--primary-orange); }
+
+/* Paginação */
+.pagination-controls { display: flex; gap: 8px; }
+.page-btn {
+  width: 36px; height: 36px; background: white; border: 1px solid #ddd;
+  color: var(--text-grey); display: flex; align-items: center; justify-content: center;
+  border-radius: 4px; cursor: pointer; transition: all 0.2s; font-size: 0.9rem;
+}
+.page-btn.active { background-color: var(--primary-orange); color: white; border-color: var(--primary-orange); }
+.page-btn:hover:not(.active) { background-color: #f0f0f0; }
+
+/* --- FORMULÁRIO (Reutilizando classes do Clients) --- */
+.client-form-container {
+  background-color: var(--bg-white);
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+  width: 100%;
+  max-width: 900px; /* Um pouco mais largo para veículos */
+  margin: 0 auto;
+}
+.client-form { display: flex; flex-direction: column; gap: 25px; }
+.form-row { display: flex; gap: 20px; }
+.form-group { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.form-group.full-width { width: 100%; }
+.form-group label { font-weight: 600; font-size: 0.9rem; color: var(--text-dark); }
+.form-group input, .form-group select {
+  padding: 12px 15px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 1rem;
+  color: var(--text-dark);
+  background-color: #fafafa;
+  transition: border 0.3s;
+}
+.form-group input:focus, .form-group select:focus {
+  outline: none; border-color: var(--primary-orange); background-color: #fff;
+}
+.form-actions-bottom {
+  display: flex; justify-content: center; gap: 15px; margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;
+}
+.btn-save {
+  background-color: var(--primary-orange); color: white; border: none;
+  padding: 12px 30px; border-radius: 8px; font-weight: 600; cursor: pointer;
+  font-size: 1rem; transition: background 0.2s;
+}
+.btn-save:hover { background-color: var(--primary-orange-hover); }
