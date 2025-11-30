@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './clients.css';
 import logoTrio from '../assets/logo.svg';
 
-// Ícones (Mesmos do Dashboard para manter consistência)
+// Ícones
 const IconDashboard = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>;
 const IconClients = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>;
 const IconCar = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 16H9m10 0h3v-3.15M7 16H4v-3.15M21 9l-2-6H5L3 9h18z"></path><rect x="3" y="9" width="18" height="9" rx="2"></rect><circle cx="7" cy="14" r="2"></circle><circle cx="17" cy="14" r="2"></circle></svg>;
@@ -12,84 +12,134 @@ const IconCarRental = () => <svg width="20" height="20" viewBox="0 0 24 24" fill
 
 const Clients = ({ onLogout }) => {
   const navigate = useNavigate();
+  
+  // --- Estados ---
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const [activeMenuRow, setActiveMenuRow] = useState(null);
-  
-  // Estado para alternar entre Lista e Formulário de Criação
   const [isCreating, setIsCreating] = useState(false);
+  const [clientes, setClientes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
 
-  // Estado do Formulário
+  // --- Estado do Formulário ---
   const [formData, setFormData] = useState({
     nome: '',
     cpf: '',
+    cnh: '',
     email: '',
     telefone: '',
-    endereco: ''
+    senha: '123', // Senha padrão para facilitar cadastro rápido
+    perfil: 'CLIENTE' // Fixo como Cliente
   });
 
-  // Dados Mockados
-  const clientsData = [
-    { id: '01', nome: 'Maria Silva', telefone: '(99) 99999-9999', cpf: '12345678901', email: 'maria@hotmail.com' },
-    { id: '02', nome: 'João Santos', telefone: '(99) 99999-9999', cpf: '12345678901', email: 'joao@outlook.com' },
-    { id: '03', nome: 'Ana Costa', telefone: '(99) 99999-9999', cpf: '12345678901', email: 'ana@hotmail.com' },
-    { id: '04', nome: 'Pedro Rocha', telefone: '(99) 99999-9999', cpf: '12345678901', email: 'pedro@outlook.com' },
-    { id: '05', nome: 'Lucas Lima', telefone: '(99) 99999-9999', cpf: '12345678901', email: 'lucas@a.com' },
-    { id: '06', nome: 'Carla Dias', telefone: '(99) 99999-9999', cpf: '12345678901', email: 'carla@a.com' },
-    { id: '07', nome: 'Paulo Vieira', telefone: '(99) 99999-9999', cpf: '12345678901', email: 'paulo@a.com' },
-  ];
+  // --- Carregar Dados (GET) ---
+  useEffect(() => {
+    fetchClientes();
+  }, []);
 
-  const toggleRowMenu = (id) => {
-    setActiveMenuRow(activeMenuRow === id ? null : id);
+  const fetchClientes = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('http://localhost:3333/usuarios');
+      const data = await response.json();
+      // Filtra para mostrar apenas CLIENTES na lista, ignorando Admins
+      const apenasClientes = data.filter(user => user.perfil === 'CLIENTE');
+      setClientes(apenasClientes);
+    } catch (error) {
+      console.error("Erro ao buscar clientes:", error);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  // --- Salvar Cliente (POST) ---
+  const handleSave = async (e) => {
+    e.preventDefault();
+    
+    try {
+      const response = await fetch('http://localhost:3333/usuarios', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+
+      if (response.ok) {
+        alert('Cliente cadastrado com sucesso!');
+        setFormData({ nome: '', cpf: '', cnh: '', email: '', telefone: '', senha: '123', perfil: 'CLIENTE' });
+        setIsCreating(false);
+        fetchClientes(); // Recarrega a lista
+      } else {
+        const errorData = await response.json();
+        alert(`Erro: ${errorData.error}`);
+      }
+    } catch (error) {
+      console.error('Erro ao salvar:', error);
+      alert('Erro de conexão ao salvar cliente.');
+    }
+  };
+
+  // --- Excluir Cliente ---
+  const handleDelete = async (id) => {
+    if (!window.confirm("Tem certeza que deseja excluir este cliente?")) return;
+
+    try {
+      const response = await fetch(`http://localhost:3333/usuarios/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        alert("Cliente excluído com sucesso!");
+        fetchClientes();
+      } else {
+        const errorData = await response.json();
+        alert(`Erro ao excluir: ${errorData.error}`);
+      }
+    } catch (error) {
+      console.error("Erro ao excluir:", error);
+      alert("Erro de conexão.");
+    }
+    setActiveMenuRow(null);
+  };
+
+  // --- Filtro Local ---
+  const filteredClients = clientes.filter((c) =>
+    (c.nome || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (c.cpf || '').includes(searchTerm)
+  );
+
+  const toggleRowMenu = (id) => setActiveMenuRow(activeMenuRow === id ? null : id);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSave = (e) => {
-    e.preventDefault();
-    console.log("Salvando cliente:", formData);
-    // Lógica de backend viria aqui
-    
-    // Resetar e voltar para lista
-    setIsCreating(false);
-    setFormData({ nome: '', cpf: '', email: '', telefone: '', endereco: '' });
-  };
-
   return (
     <div className="dashboard-container">
-      {/* Sidebar Fixa */}
       <aside className="sidebar">
         <div className="sidebar-logo">
-          <img src={logoTrio} alt="Trio Bit Garage" />
+          {logoTrio ? <img src={logoTrio} alt="Trio Bit Garage" /> : <h3>Trio Bit</h3>}
         </div>
         <nav className="sidebar-menu">
           <div className="menu-item" onClick={() => navigate('/dashboard')}>
-            <IconDashboard />
-            <span>Dashboard</span>
+            <IconDashboard /><span>Dashboard</span>
           </div>
           <div className="menu-label">MENU</div>
           <div className="menu-item active">
-            <IconClients />
-            <span>Clientes</span>
+            <IconClients /><span>Clientes</span>
           </div>
           <div className="menu-item" onClick={() => navigate('/locacoes')}>
-            <IconCarRental />
-            <span>Locação de Carros</span>
+            <IconCarRental /><span>Locação de Carros</span>
           </div>
           <div className="menu-item" onClick={() => navigate('/veiculos')}>
-            <IconCar />
-            <span>Veículos</span>
+            <IconCar /><span>Veículos</span>
           </div>
           <div className="menu-item" onClick={() => navigate('/pagamentos')}>
-            <IconPayment />
-            <span>Pagamentos</span>
+            <IconPayment /><span>Pagamentos</span>
           </div>
         </nav>
       </aside>
 
-      {/* Conteúdo Principal */}
       <main className="main-content">
         <header className="top-header">
           <div className="header-welcome">
@@ -99,28 +149,18 @@ const Clients = ({ onLogout }) => {
               </h2>
             </div>
             <p style={{ margin: 0, color: '#666', fontSize: '0.9rem' }}>
-              {isCreating 
-                ? 'Preencha os dados abaixo para cadastrar um novo cliente' 
-                : 'Visualizar, pesquisar e adicionar novos clientes'}
+              {isCreating ? 'Preencha os dados do novo cliente' : 'Gerenciamento de clientes da locadora'}
             </p>
           </div>
 
           <div className="header-actions">
-            <button className="btn-icon notification">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-            </button>
             <div className="user-profile" onClick={() => setShowUserDropdown(!showUserDropdown)}>
               <div className="avatar">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
               </div>
-              <div className="user-info">
-                <span className="user-name">Luke S.</span>
-                <span className="user-role">RH</span>
-              </div>
-              <svg className={`chevron ${showUserDropdown ? 'rotate' : ''}`} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
+              <div className="user-info"><span className="user-name">Luke S.</span><span className="user-role">Admin</span></div>
               {showUserDropdown && (
                 <div className="dropdown-menu">
-                  <div className="dropdown-item">Perfil</div>
                   <div className="dropdown-item logout" onClick={onLogout}>Sair</div>
                 </div>
               )}
@@ -128,133 +168,98 @@ const Clients = ({ onLogout }) => {
           </div>
         </header>
 
-        {/* --- RENDERIZAÇÃO CONDICIONAL --- */}
         {isCreating ? (
-          /* --- FORMULÁRIO DE CADASTRO --- */
           <div className="client-form-container">
+            <div 
+                style={{ display: 'flex', alignItems: 'center', color: '#FF914D', cursor: 'pointer', marginBottom: '20px', fontWeight: 500 }}
+                onClick={() => setIsCreating(false)}
+            >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{marginRight: '5px'}}><polyline points="15 18 9 12 15 6"></polyline></svg>
+                Voltar
+            </div>
+
             <form className="client-form" onSubmit={handleSave}>
               <div className="form-row">
                 <div className="form-group">
-                  <label htmlFor="nome">Nome Completo</label>
-                  <input 
-                    type="text" id="nome" name="nome" 
-                    placeholder="Ex: Maria Silva" 
-                    value={formData.nome} onChange={handleInputChange} required 
-                  />
+                  <label>Nome Completo</label>
+                  <input name="nome" placeholder="Ex: Maria Silva" value={formData.nome} onChange={handleInputChange} required />
                 </div>
                 <div className="form-group">
-                  <label htmlFor="cpf">CPF</label>
-                  <input 
-                    type="text" id="cpf" name="cpf" 
-                    placeholder="000.000.000-00" 
-                    value={formData.cpf} onChange={handleInputChange} required 
-                  />
+                  <label>CPF</label>
+                  <input name="cpf" placeholder="000.000.000-00" value={formData.cpf} onChange={handleInputChange} required maxLength="11"/>
                 </div>
               </div>
 
               <div className="form-row">
                 <div className="form-group">
-                  <label htmlFor="email">Email</label>
-                  <input 
-                    type="email" id="email" name="email" 
-                    placeholder="exemplo@email.com" 
-                    value={formData.email} onChange={handleInputChange} required 
-                  />
+                  <label>CNH</label>
+                  <input name="cnh" placeholder="Número da CNH" value={formData.cnh} onChange={handleInputChange} required maxLength="11"/>
                 </div>
                 <div className="form-group">
-                  <label htmlFor="telefone">Telefone</label>
-                  <input 
-                    type="tel" id="telefone" name="telefone" 
-                    placeholder="(00) 00000-0000" 
-                    value={formData.telefone} onChange={handleInputChange} required 
-                  />
+                  <label>Telefone</label>
+                  <input name="telefone" placeholder="(00) 00000-0000" value={formData.telefone} onChange={handleInputChange} />
                 </div>
               </div>
 
               <div className="form-row">
                 <div className="form-group full-width">
-                  <label htmlFor="endereco">Endereço</label>
-                  <input 
-                    type="text" id="endereco" name="endereco" 
-                    placeholder="Rua, Número, Bairro, Cidade - UF" 
-                    value={formData.endereco} onChange={handleInputChange} 
-                  />
+                  <label>Email</label>
+                  <input type="email" name="email" placeholder="exemplo@email.com" value={formData.email} onChange={handleInputChange} required />
                 </div>
               </div>
+              
+              {/* Campo oculto de senha e perfil */}
+              <input type="hidden" name="perfil" value="CLIENTE" />
 
               <div className="form-actions-bottom">
-                <button type="button" className="btn-cancel" onClick={() => setIsCreating(false)}>
-                  Cancelar
-                </button>
-                <button type="submit" className="btn-save">
-                  Salvar Cliente
-                </button>
+                <button type="submit" className="btn-save">Salvar Cliente</button>
               </div>
             </form>
           </div>
         ) : (
-          /* --- LISTA DE CLIENTES --- */
           <>
             <div className="clients-filters-card">
               <div className="filter-item search-box">
-                <label>Pesquisa rápida de um cliente</label>
+                <label>Pesquisa rápida</label>
                 <div className="input-wrapper">
-                  <input type="text" placeholder="Digite o nome de pesquisa" />
+                  <input type="text" placeholder="Digite nome ou CPF" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
                   <svg className="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                 </div>
               </div>
-
               <div className="filter-item total-counter">
-                <h3>250</h3>
+                <h3>{clientes.length}</h3>
                 <span>Total de clientes</span>
               </div>
-
-              <div className="filter-item dropdown-filter">
-                <label>Filtrar cliente</label>
-                <select>
-                  <option>Todos</option>
-                  <option>Ativos</option>
-                  <option>Inativos</option>
-                </select>
-              </div>
-
-              <button className="btn-new-client" onClick={() => setIsCreating(true)}>
-                Cadastrar Novo
-              </button>
+              <button className="btn-new-client" onClick={() => setIsCreating(true)}>Cadastrar Novo</button>
             </div>
 
             <div className="clients-table-container">
               <div className="table-header">
                 <h3>Todos os clientes</h3>
-                <div className="pagination-info">Mostrando <span className="highlight">07</span> por página</div>
+                <div className="pagination-info">Mostrando <span className="highlight">10</span> por página</div>
               </div>
               
               <table className="clients-table">
                 <thead>
                   <tr>
-                    <th>S/N</th>
-                    <th>Nome</th>
-                    <th>Telefone</th>
-                    <th>CPF</th>
-                    <th>Email</th>
-                    <th>Ação</th>
+                    <th>S/N</th><th>Nome</th><th>CPF</th><th>CNH</th><th>Email</th><th>Ação</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {clientsData.map((client) => (
+                  {loading ? (
+                    <tr><td colSpan="6" style={{textAlign: 'center', padding: '20px'}}>Carregando...</td></tr>
+                  ) : filteredClients.map((client, index) => (
                     <tr key={client.id}>
-                      <td>{client.id}</td>
+                      <td>{String(index + 1).padStart(2, '0')}</td>
                       <td>{client.nome}</td>
-                      <td>{client.telefone}</td>
                       <td>{client.cpf}</td>
+                      <td>{client.cnh}</td>
                       <td>{client.email}</td>
                       <td className="action-cell">
                         <span className="link-ver-mais" onClick={() => toggleRowMenu(client.id)}>Ver mais</span>
                         {activeMenuRow === client.id && (
                           <div className="action-menu-popover">
-                            <div className="popover-item">Visualizar</div>
-                            <div className="popover-item">Editar</div>
-                            <div className="popover-item">Excluir</div>
+                            <div className="popover-item" onClick={() => handleDelete(client.id)} style={{color: 'red'}}>Excluir</div>
                           </div>
                         )}
                       </td>
@@ -262,15 +267,6 @@ const Clients = ({ onLogout }) => {
                   ))}
                 </tbody>
               </table>
-            </div>
-
-            <div className="pagination-controls">
-              <button className="page-btn active">1</button>
-              <button className="page-btn">2</button>
-              <button className="page-btn">3</button>
-              <button className="page-btn">4</button>
-              <button className="page-btn">5</button>
-              <button className="page-btn">{">>"}</button>
             </div>
           </>
         )}
