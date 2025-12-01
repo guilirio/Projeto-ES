@@ -193,17 +193,26 @@ npm install
 
 # Execute a aplicação
 npm start
-# caso não funcione em seu SO use
+
+```
+
+Caso não funcione em seu SO, utilize:
+
+```bash
+# Execute a aplicação
 npm run dev
 
 ```
+
+A aplicação ficará disponível em:
+http://localhost:5173
 
 ---
 
 ## Equipe
 
-| Nome do Integrante      | Matrícula | GitHub                                       |
-| :---------------------- | :-------- | :------------------------------------------- |
-| Guilherme Lirio Miranda | 202410367 | [@guilirio](https://github.com/guilirio)     |
-| Fábio Damas Valim       | 202410372 | [@fabiovalim](https://github.com/fabiovalim) |
-| Caio Finnochio Martins  | 202410377 | [@caiobfm](https://github.com/caiobfm)       |
+| Nome dos Integrantes         | Matrícula | GitHub                                       |
+| :--------------------------- | :-------- | :------------------------------------------- |
+| Caio Bueno Finnochio Martins | 202410377 | [@caiobfm](https://github.com/caiobfm)       |
+| Guilherme Lirio Miranda      | 202410367 | [@guilirio](https://github.com/guilirio)     |
+| Fábio Damas Valim            | 202410372 | [@fabiovalim](https://github.com/fabiovalim) |
