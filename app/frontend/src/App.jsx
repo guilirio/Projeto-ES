@@ -2,7 +2,9 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, useNavigate, Navigate } from 'react-router-dom';
 import './App.css';
 import Login from './Login/login.jsx';
-import Forgot from './Forgot/Forgot.jsx'; 
+import Forgot from './Forgot/forgot.jsx';
+import VerificationEmail from './VerificacaoEmail/VerificationEmail.jsx';
+import RedefineSenha from './RedefineSenha/RedefineSenha.jsx';
 import Register from './Register/Register.jsx';
 import Dashboard from './Dashboard/dashboard.jsx';
 import Clients from './Clients/clients.jsx';
@@ -31,6 +33,31 @@ const ForgotScreen = () => {
     <Forgot 
       onBackToLogin={() => navigate('/login')} 
       onRegister={() => navigate('/register')} 
+      onCodeSent={() => navigate('/verify')}
+    />
+  );
+};
+
+
+// Wrapper para injetar a navegação no componente verificationEmail
+const VerificationEmailScreen = () => {
+  const navigate = useNavigate();
+
+  return (
+    <VerificationEmail
+      onRegister={() => navigate("/register")}
+      onBackToForgot={() => navigate("/forgot")}
+      onCodeVerified={() => navigate("/reset")}
+    />
+  );
+};
+
+// Wrapper para injetar a navegação no componente RedefineSenha
+const RedefineSenhaScreen = () => {
+  const navigate = useNavigate();
+  return (
+    <RedefineSenha
+      onBackToLogin={() => navigate('/login')}
     />
   );
 };
@@ -102,6 +129,8 @@ function App() {
           {/* Rotas de Autenticação */}
           <Route path="/login" element={<LoginScreen />} />
           <Route path="/forgot" element={<ForgotScreen />} />
+          <Route path="/verify" element={<VerificationEmailScreen />} />
+          <Route path="/reset" element={<RedefineSenhaScreen />} />
           <Route path="/register" element={<RegisterScreen />} />
 
           {/* Rotas Protegidas (Dashboard e Funcionalidades) */}
