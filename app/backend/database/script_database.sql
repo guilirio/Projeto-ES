@@ -72,3 +72,17 @@ CREATE TABLE IF NOT EXISTS Locacao (
     ON DELETE RESTRICT 
     ON UPDATE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS Pagamento (
+  id 				         INT	            NOT NULL AUTO_INCREMENT,
+  Locacao_id 		     INT		          NOT NULL,
+  valor_pago         DECIMAL(10, 2) 	NOT NULL,
+  metodo_pagamento	 VARCHAR(50)   		NOT NULL,
+  
+  
+  PRIMARY KEY (id),
+
+  FOREIGN KEY (Locacao_id) REFERENCES Locacao(id)
+    ON DELETE RESTRICT 
+    ON UPDATE CASCADE
+);
