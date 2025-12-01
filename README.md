@@ -151,13 +151,13 @@ npm install
 
 - Para rodar o projeto Backend, crie um arquivo `.env` dentro de `/backend` com:
 
-```javascript
-PORT = 3333;
-DB_HOST = localhost;
-DB_USER = root;
-DB_PASS = SUA_SENHA; // troque por sua senha real
-DB_NAME = trio_bit_garage_db;
-DB_DIALECT = mysql;
+```bash
+PORT=3333
+DB_HOST=localhost
+DB_USER=root
+DB_PASS=PREENCHER_COM_SUA_SENHA
+DB_NAME=trio_bit_garage_db
+DB_DIALECT=mysql
 ```
 
 - Para rodar o projeto backend é necessário que o banco de dados já esteja criado na sua máquina, para isso, rode o script (disponível em `backend/database`) em algum editor sql para criar o banco de dados.
