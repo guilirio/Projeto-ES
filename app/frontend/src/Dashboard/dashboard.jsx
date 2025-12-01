@@ -112,7 +112,7 @@ const Dashboard = ({ onLogout }) => {
               <span className="stat-label">Total de clientes</span>
               <span className="stat-trend negative">↓ 0,2% abaixo do último mês</span>
             </div>
-            <div className="stat-icon blue-bg">📄</div>
+            <div className="stat-icon blue-bg">👥</div>
           </div>
 
           <div className="card stat-card" style={{ gridColumn: "span 2" }}>
