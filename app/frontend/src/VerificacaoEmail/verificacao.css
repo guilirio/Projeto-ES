@@ -1,0 +1,225 @@
+/* verificationEmail.css */
+
+:root {
+  --primary-orange: #FF914D;
+  --primary-orange-hover: #e67e3a;
+  --text-dark: #333333;
+  --text-grey: #666666;
+  --text-light-grey: #999999;
+  --border-color: #e0e0e0;
+  --bg-white: #ffffff;
+  --bg-page: #f4f7f9;
+  --font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --strip-height: 20px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body, html {
+  height: 100%;
+  font-family: var(--font-family);
+  background-color: var(--bg-page);
+}
+
+.main-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Barra Laranja Decorativa */
+.orange-strip {
+  background-color: var(--primary-orange);
+  height: var(--strip-height);
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+}
+
+/* Área Central */
+.content-area {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  margin-top: var(--strip-height);
+  min-height: calc(100vh - var(--strip-height));
+}
+
+/* Card Principal */
+.auth-card {
+  background-color: var(--bg-white);
+  padding: 40px 50px;
+  width: 100%;
+  max-width: 500px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header (botão Criar Conta) */
+.card-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+.btn-create-account {
+  background: transparent;
+  border: 1px solid var(--primary-orange);
+  color: var(--primary-orange);
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+}
+
+.btn-create-account:hover {
+  background-color: #fff3e0;
+}
+
+/* Logo */
+.logo-section {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.card-logo {
+  height: 80px;
+  width: auto;
+  object-fit: contain;
+}
+
+/* Textos */
+.text-section {
+  margin-bottom: 30px;
+  text-align: left;
+}
+
+.subtitle {
+  color: var(--text-grey);
+  font-size: 0.9rem;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.title {
+  color: var(--text-dark);
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+}
+
+.description {
+  color: var(--text-grey);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* Formulário */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Inputs de código */
+.code-inputs {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.code-input {
+  width: 48px;
+  height: 48px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  text-align: center;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  background-color: #fafafa;
+  transition: border-color 0.3s, background-color 0.3s;
+}
+
+.code-input:focus {
+  outline: none;
+  border-color: var(--primary-orange);
+  background-color: var(--bg-white);
+}
+
+/* Link de reenviar código */
+.resend-wrapper {
+  margin-top: 10px;
+  font-size: 0.85rem;
+  color: var(--text-grey);
+}
+
+.resend-button {
+  background: none;
+  border: none;
+  color: var(--primary-orange);
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 4px;
+}
+
+.resend-button:hover {
+  text-decoration: underline;
+}
+
+/* Botão Submit */
+.btn-submit {
+  background-color: var(--primary-orange);
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.1s;
+  margin-top: 10px;
+  box-shadow: 0 4px 10px rgba(255, 145, 77, 0.3);
+}
+
+.btn-submit:hover {
+  background-color: var(--primary-orange-hover);
+}
+
+.btn-submit:active {
+  transform: scale(0.98);
+}
+
+/* Responsividade */
+@media (max-width: 600px) {
+  .content-area {
+    padding: 15px;
+  }
+  
+  .auth-card {
+    padding: 30px 20px;
+  }
+
+  .title {
+    font-size: 1.6rem;
+  }
+
+  .code-inputs {
+    justify-content: center;
+  }
+}
