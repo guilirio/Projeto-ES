@@ -39,6 +39,7 @@ const Locacao = ({ onLogout }) => {
   };
 
   const [formData, setFormData] = useState(initialFormState);
+  const [statusAnterior, setStatusAnterior] = useState(''); // Para controlar mudanças de status
 
   // --- Carregar Dados Iniciais ---
   useEffect(() => {
@@ -86,6 +87,7 @@ const Locacao = ({ onLogout }) => {
     setIsCreating(false);
     setEditingId(null);
     setActiveMenuRow(null);
+    setStatusAnterior('');
   };
 
   // --- Preparar para Editar ---
@@ -98,6 +100,7 @@ const Locacao = ({ onLogout }) => {
       valor_total: locacao.valor_total || '',
       status: locacao.status || 'ATIVA'
     });
+    setStatusAnterior(locacao.status || 'ATIVA'); // Guarda o status anterior
     setEditingId(locacao.id);
     setIsCreating(true);
     setActiveMenuRow(null);
@@ -133,6 +136,10 @@ const Locacao = ({ onLogout }) => {
       });
 
       if (response.ok) {
+        // Se o veículo estava alugado, liberar ele
+        if (locacaoAtual.Veiculo_id && locacaoAtual.status === 'ATIVA') {
+          await atualizarStatusVeiculo(locacaoAtual.Veiculo_id, 'DISPONIVEL');
+        }
         alert("Locação cancelada com sucesso!");
         fetchAllData(); // Atualiza a lista
       } else {
@@ -176,6 +183,10 @@ const Locacao = ({ onLogout }) => {
       });
 
       if (response.ok) {
+        // Se o veículo estava alugado, liberar ele
+        if (locacaoAtual.Veiculo_id && locacaoAtual.status === 'ATIVA') {
+          await atualizarStatusVeiculo(locacaoAtual.Veiculo_id, 'DISPONIVEL');
+        }
         alert("Locação concluída com sucesso!");
         fetchAllData(); // Atualiza a lista
       } else {
@@ -189,83 +200,33 @@ const Locacao = ({ onLogout }) => {
     setActiveMenuRow(null);
   };
 
-  // --- Excluir Locação (APENAS se status for CONCLUIDA ou CANCELADA) ---
-  const handleDelete = async (id, statusAtual) => {
-    // VERIFICAÇÃO: Só pode excluir se status for CONCLUIDA ou CANCELADA
-    if (statusAtual !== 'CONCLUIDA' && statusAtual !== 'CANCELADA') {
-      alert(`Não é possível excluir uma locação com status "${formatStatus(statusAtual)}".\nSó é permitido excluir locações "Concluídas" ou "Canceladas".`);
-      setActiveMenuRow(null);
-      return;
-    }
-
-    if (!window.confirm(`Tem certeza que deseja EXCLUIR esta locação ${formatStatus(statusAtual).toLowerCase()}?`)) {
-      setActiveMenuRow(null);
-      return;
-    }
-
+  // --- Função para atualizar status do veículo ---
+  const atualizarStatusVeiculo = async (veiculoId, novoStatus) => {
     try {
-      const response = await fetch(`http://localhost:3333/locacoes/${id}`, {
-        method: 'DELETE',
+      const response = await fetch(`http://localhost:3333/veiculos/${veiculoId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ situacao: novoStatus })
       });
 
-      if (response.ok) {
-        alert("Locação excluída com sucesso!");
-        fetchAllData();
-      } else {
-        const errorData = await response.json();
-        // Se não puder excluir por causa de pagamentos
-        if (errorData.error && errorData.error.includes('foreign key constraint')) {
-          alert("Não é possível excluir esta locação porque existem pagamentos vinculados a ela.");
-        } else {
-          alert(`Erro ao excluir: ${errorData.error || 'Erro desconhecido'}`);
-        }
+      if (!response.ok) {
+        console.error(`Erro ao atualizar status do veículo ${veiculoId}`);
       }
     } catch (error) {
-      console.error("Erro ao excluir:", error);
-      alert("Erro de conexão ao tentar excluir.");
+      console.error("Erro ao atualizar veículo:", error);
     }
-    setActiveMenuRow(null);
   };
 
   // --- Salvar (Criar ou Editar) ---
   const handleSave = async (e) => {
     e.preventDefault();
 
-    // Se estiver editando, manter o status original
-    let payload;
-    if (editingId) {
-      // Buscar a locação atual para manter o status original
-      try {
-        const response = await fetch(`http://localhost:3333/locacoes/${editingId}`);
-        const locacaoAtual = await response.json();
-        
-        payload = {
-          ...formData,
-          Usuario_id: parseInt(formData.Usuario_id),
-          Veiculo_id: parseInt(formData.Veiculo_id),
-          valor_total: parseFloat(formData.valor_total) || 0,
-          // MANTER o status original ao editar (não alterar)
-          status: locacaoAtual.status || formData.status
-        };
-      } catch (error) {
-        console.error("Erro ao buscar locação atual:", error);
-        // Fallback: usar o status do formulário
-        payload = {
-          ...formData,
-          Usuario_id: parseInt(formData.Usuario_id),
-          Veiculo_id: parseInt(formData.Veiculo_id),
-          valor_total: parseFloat(formData.valor_total) || 0
-        };
-      }
-    } else {
-      // Nova locação: usar status do formulário
-      payload = {
-        ...formData,
-        Usuario_id: parseInt(formData.Usuario_id),
-        Veiculo_id: parseInt(formData.Veiculo_id),
-        valor_total: parseFloat(formData.valor_total) || 0
-      };
-    }
+    const payload = {
+      ...formData,
+      Usuario_id: parseInt(formData.Usuario_id),
+      Veiculo_id: parseInt(formData.Veiculo_id),
+      valor_total: parseFloat(formData.valor_total) || 0
+    };
 
     // Define se é POST (criar) ou PUT (editar)
     const url = editingId 
@@ -275,6 +236,25 @@ const Locacao = ({ onLogout }) => {
     const method = editingId ? 'PUT' : 'POST';
 
     try {
+      // Se estiver editando, verificar mudança de status
+      if (editingId && formData.Veiculo_id && statusAnterior !== formData.status) {
+        // Status mudou, precisa atualizar veículo
+        
+        if (formData.status === 'ATIVA') {
+          // Se voltou a ser ativa, veículo fica ALUGADO
+          await atualizarStatusVeiculo(parseInt(formData.Veiculo_id), 'ALUGADO');
+        } else if (formData.status === 'CONCLUIDA' || formData.status === 'CANCELADA') {
+          // Se concluída ou cancelada, veículo fica DISPONÍVEL
+          // Mas só se antes estava ativa (alugado)
+          if (statusAnterior === 'ATIVA') {
+            await atualizarStatusVeiculo(parseInt(formData.Veiculo_id), 'DISPONIVEL');
+          }
+        }
+      } else if (!editingId && formData.status === 'ATIVA' && formData.Veiculo_id) {
+        // Nova locação com status ativa: veículo fica ALUGADO
+        await atualizarStatusVeiculo(parseInt(formData.Veiculo_id), 'ALUGADO');
+      }
+
       const response = await fetch(url, {
         method: method,
         headers: { 'Content-Type': 'application/json' },
@@ -470,41 +450,28 @@ const Locacao = ({ onLogout }) => {
                 </div>
               </div>
 
-              {/* Campo Status - VISÍVEL mas DESABILITADO quando editando */}
+              {/* Campo Status - EDITÁVEL tanto na criação quanto na edição */}
               <div className="form-row">
                 <div className="form-group full-width">
-                  <label>
-                    Status 
-                    {editingId && <span style={{ fontSize: '0.8em', color: '#666', marginLeft: '5px' }}>(não editável)</span>}
-                  </label>
-                  {editingId ? (
-                    // Quando editando: campo readonly que mostra o status atual
-                    <input 
-                      type="text"
-                      value={formatStatus(formData.status)}
-                      readOnly
-                      disabled
-                      style={{ 
-                        padding: '12px 15px', 
-                        borderRadius: '8px', 
-                        border: '1px solid #E0E0E0', 
-                        backgroundColor: '#f5f5f5',
-                        color: '#666',
-                        cursor: 'not-allowed'
-                      }}
-                    />
-                  ) : (
-                    // Quando criando novo: select normal
-                    <select 
-                      name="status" 
-                      value={formData.status} 
-                      onChange={handleInputChange}
-                      required
-                    >
-                      <option value="ATIVA">Ativa</option>
-                      <option value="CONCLUIDA">Concluída</option>
-                      <option value="CANCELADA">Cancelada</option>
-                    </select>
+                  <label>Status</label>
+                  <select 
+                    name="status" 
+                    value={formData.status} 
+                    onChange={handleInputChange}
+                    required
+                  >
+                    <option value="ATIVA">Ativa</option>
+                    <option value="CONCLUIDA">Concluída</option>
+                    <option value="CANCELADA">Cancelada</option>
+                  </select>
+                  {editingId && (
+                    <div style={{ fontSize: '0.8em', color: '#666', marginTop: '5px' }}>
+                      <strong>Atenção:</strong> Mudar o status altera automaticamente a situação do veículo:
+                      <ul style={{ margin: '5px 0 0 15px', padding: 0 }}>
+                        <li><strong>Ativa</strong> → Veículo fica <strong>ALUGADO</strong></li>
+                        <li><strong>Concluída/Cancelada</strong> → Veículo fica <strong>DISPONÍVEL</strong></li>
+                      </ul>
+                    </div>
                   )}
                 </div>
               </div>
@@ -599,10 +566,6 @@ const Locacao = ({ onLogout }) => {
                                  <div className="popover-item" onClick={() => handleConcluir(l.id)}>Concluir</div>
                                  <div className="popover-item" onClick={() => handleCancelar(l.id)}>Cancelar</div>
                                </>
-                             )}
-                             {/* Excluir só aparece para status CONCLUIDA ou CANCELADA */}
-                             {(l.status === 'CONCLUIDA' || l.status === 'CANCELADA') && (
-                               <div className="popover-item" onClick={() => handleDelete(l.id, l.status)} style={{color: 'red'}}>Excluir</div>
                              )}
                            </div>
                          )}
