@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-// Reutilizando o CSS de veículos para manter o padrão visual
 import '../Veiculo/veiculo.css'; 
 import logoTrio from '../assets/logo.svg'; 
 
@@ -14,26 +13,33 @@ const IconCarRental = () => <svg width="20" height="20" viewBox="0 0 24 24" fill
 const Locacao = ({ onLogout }) => {
   const navigate = useNavigate();
   
-  // --- Estados Visuais ---
+  // --- Estados de Controle Visual ---
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const [activeMenuRow, setActiveMenuRow] = useState(null);
   const [isCreating, setIsCreating] = useState(false);
+  
+  // --- Estado para Edição ---
+  const [editingId, setEditingId] = useState(null); 
 
   // --- Estados de Dados ---
   const [locacoes, setLocacoes] = useState([]);
-  const [clientes, setClientes] = useState([]); // Para o select do formulário
-  const [veiculos, setVeiculos] = useState([]); // Para o select do formulário
+  const [clientes, setClientes] = useState([]);
+  const [veiculos, setVeiculos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
 
   // --- Estado do Formulário ---
-  const [formData, setFormData] = useState({
-    Usuario_id: '',     // ID do Cliente
-    Veiculo_id: '',     // ID do Carro
+  const initialFormState = {
+    Usuario_id: '',
+    Veiculo_id: '',
     data_retirada: '',
     data_devolucao: '',
-    valor_total: ''
-  });
+    valor_total: '',
+    status: 'ATIVA'
+  };
+
+  const [formData, setFormData] = useState(initialFormState);
+  const [statusAnterior, setStatusAnterior] = useState(''); // Para controlar mudanças de status
 
   // --- Carregar Dados Iniciais ---
   useEffect(() => {
@@ -44,10 +50,9 @@ const Locacao = ({ onLogout }) => {
     try {
       setLoading(true);
       
-      // Busca Locações, Clientes e Veículos em paralelo
       const [resLocacoes, resClientes, resVeiculos] = await Promise.all([
         fetch('http://localhost:3333/locacoes'),
-        fetch('http://localhost:3333/usuarios'), // Assumindo que retorna todos usuários
+        fetch('http://localhost:3333/usuarios'),
         fetch('http://localhost:3333/veiculos')
       ]);
 
@@ -56,11 +61,7 @@ const Locacao = ({ onLogout }) => {
       const dataVeiculos = await resVeiculos.json();
 
       setLocacoes(dataLocacoes);
-      
-      // Filtrar apenas usuários perfil 'CLIENTE' se necessário, ou usar todos
-      setClientes(dataClientes.filter(u => u.perfil === 'CLIENTE')); 
-      
-      // Filtrar apenas veículos 'DISPONIVEL' para o cadastro (opcional)
+      setClientes(dataClientes.filter(u => u.perfil === 'CLIENTE'));
       setVeiculos(dataVeiculos);
 
     } catch (error) {
@@ -70,15 +71,153 @@ const Locacao = ({ onLogout }) => {
     }
   };
 
-  // --- Helpers ---
-  const toggleRowMenu = (id) => setActiveMenuRow(activeMenuRow === id ? null : id);
+  // --- Manipuladores de Eventos ---
+  const toggleRowMenu = (id) => {
+    setActiveMenuRow(activeMenuRow === id ? null : id);
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  // --- Salvar Locação (POST) ---
+  // --- Resetar Formulário ---
+  const resetForm = () => {
+    setFormData(initialFormState);
+    setIsCreating(false);
+    setEditingId(null);
+    setActiveMenuRow(null);
+    setStatusAnterior('');
+  };
+
+  // --- Preparar para Editar ---
+  const handleEdit = (locacao) => {
+    setFormData({
+      Usuario_id: locacao.Usuario_id || locacao.Usuario?.id || '',
+      Veiculo_id: locacao.Veiculo_id || locacao.Veiculo?.id || '',
+      data_retirada: locacao.data_retirada ? locacao.data_retirada.split('T')[0] : '',
+      data_devolucao: locacao.data_devolucao ? locacao.data_devolucao.split('T')[0] : '',
+      valor_total: locacao.valor_total || '',
+      status: locacao.status || 'ATIVA'
+    });
+    setStatusAnterior(locacao.status || 'ATIVA'); // Guarda o status anterior
+    setEditingId(locacao.id);
+    setIsCreating(true);
+    setActiveMenuRow(null);
+  };
+
+  // --- Função para CANCELAR locação (atualiza status) ---
+  const handleCancelar = async (id) => {
+    if (!window.confirm("Deseja realmente CANCELAR esta locação?")) {
+      return;
+    }
+
+    try {
+      // Primeiro buscar a locação atual
+      const responseGet = await fetch(`http://localhost:3333/locacoes/${id}`);
+      const locacaoAtual = await responseGet.json();
+      
+      if (!locacaoAtual) {
+        alert("Locação não encontrada!");
+        return;
+      }
+
+      // Preparar dados para atualização (apenas mudar status)
+      const dadosAtualizados = {
+        ...locacaoAtual,
+        status: 'CANCELADA'
+      };
+
+      // Atualizar a locação
+      const response = await fetch(`http://localhost:3333/locacoes/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dadosAtualizados)
+      });
+
+      if (response.ok) {
+        // Se o veículo estava alugado, liberar ele
+        if (locacaoAtual.Veiculo_id && locacaoAtual.status === 'ATIVA') {
+          await atualizarStatusVeiculo(locacaoAtual.Veiculo_id, 'DISPONIVEL');
+        }
+        alert("Locação cancelada com sucesso!");
+        fetchAllData(); // Atualiza a lista
+      } else {
+        const errorData = await response.json();
+        alert(`Erro ao cancelar: ${errorData.error}`);
+      }
+    } catch (error) {
+      console.error("Erro ao cancelar:", error);
+      alert("Erro de conexão ao tentar cancelar.");
+    }
+    setActiveMenuRow(null);
+  };
+
+  // --- Função para CONCLUIR locação (atualiza status) ---
+  const handleConcluir = async (id) => {
+    if (!window.confirm("Deseja realmente CONCLUIR esta locação?")) {
+      return;
+    }
+
+    try {
+      // Primeiro buscar a locação atual
+      const responseGet = await fetch(`http://localhost:3333/locacoes/${id}`);
+      const locacaoAtual = await responseGet.json();
+      
+      if (!locacaoAtual) {
+        alert("Locação não encontrada!");
+        return;
+      }
+
+      // Preparar dados para atualização (apenas mudar status)
+      const dadosAtualizados = {
+        ...locacaoAtual,
+        status: 'CONCLUIDA'
+      };
+
+      // Atualizar a locação
+      const response = await fetch(`http://localhost:3333/locacoes/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dadosAtualizados)
+      });
+
+      if (response.ok) {
+        // Se o veículo estava alugado, liberar ele
+        if (locacaoAtual.Veiculo_id && locacaoAtual.status === 'ATIVA') {
+          await atualizarStatusVeiculo(locacaoAtual.Veiculo_id, 'DISPONIVEL');
+        }
+        alert("Locação concluída com sucesso!");
+        fetchAllData(); // Atualiza a lista
+      } else {
+        const errorData = await response.json();
+        alert(`Erro ao concluir: ${errorData.error}`);
+      }
+    } catch (error) {
+      console.error("Erro ao concluir:", error);
+      alert("Erro de conexão ao tentar concluir.");
+    }
+    setActiveMenuRow(null);
+  };
+
+  // --- Função para atualizar status do veículo ---
+  const atualizarStatusVeiculo = async (veiculoId, novoStatus) => {
+    try {
+      const response = await fetch(`http://localhost:3333/veiculos/${veiculoId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ situacao: novoStatus })
+      });
+
+      if (!response.ok) {
+        console.error(`Erro ao atualizar status do veículo ${veiculoId}`);
+      }
+    } catch (error) {
+      console.error("Erro ao atualizar veículo:", error);
+    }
+  };
+
+  // --- Salvar (Criar ou Editar) ---
   const handleSave = async (e) => {
     e.preventDefault();
 
@@ -86,21 +225,46 @@ const Locacao = ({ onLogout }) => {
       ...formData,
       Usuario_id: parseInt(formData.Usuario_id),
       Veiculo_id: parseInt(formData.Veiculo_id),
-      valor_total: parseFloat(formData.valor_total)
+      valor_total: parseFloat(formData.valor_total) || 0
     };
 
+    // Define se é POST (criar) ou PUT (editar)
+    const url = editingId 
+      ? `http://localhost:3333/locacoes/${editingId}`
+      : 'http://localhost:3333/locacoes';
+    
+    const method = editingId ? 'PUT' : 'POST';
+
     try {
-      const response = await fetch('http://localhost:3333/locacoes', {
-        method: 'POST',
+      // Se estiver editando, verificar mudança de status
+      if (editingId && formData.Veiculo_id && statusAnterior !== formData.status) {
+        // Status mudou, precisa atualizar veículo
+        
+        if (formData.status === 'ATIVA') {
+          // Se voltou a ser ativa, veículo fica ALUGADO
+          await atualizarStatusVeiculo(parseInt(formData.Veiculo_id), 'ALUGADO');
+        } else if (formData.status === 'CONCLUIDA' || formData.status === 'CANCELADA') {
+          // Se concluída ou cancelada, veículo fica DISPONÍVEL
+          // Mas só se antes estava ativa (alugado)
+          if (statusAnterior === 'ATIVA') {
+            await atualizarStatusVeiculo(parseInt(formData.Veiculo_id), 'DISPONIVEL');
+          }
+        }
+      } else if (!editingId && formData.status === 'ATIVA' && formData.Veiculo_id) {
+        // Nova locação com status ativa: veículo fica ALUGADO
+        await atualizarStatusVeiculo(parseInt(formData.Veiculo_id), 'ALUGADO');
+      }
+
+      const response = await fetch(url, {
+        method: method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
 
       if (response.ok) {
-        alert('Locação registrada com sucesso!');
-        setFormData({ Usuario_id: '', Veiculo_id: '', data_retirada: '', data_devolucao: '', valor_total: '' });
-        setIsCreating(false);
-        fetchAllData(); // Atualiza a lista e o status dos carros
+        alert(editingId ? 'Locação atualizada com sucesso!' : 'Locação cadastrada com sucesso!');
+        resetForm();
+        fetchAllData(); 
       } else {
         const errorData = await response.json();
         alert(`Erro: ${errorData.error}`);
@@ -111,100 +275,74 @@ const Locacao = ({ onLogout }) => {
     }
   };
 
-  // --- Função para FINALIZAR (Excluir) a Locação ---
-  const handleFinalizar = async (id) => {
-    // Confirmação para evitar cliques acidentais
-    if (!window.confirm("Deseja realmente finalizar esta locação? O registro será excluído.")) {
-      return;
-    }
-
-    try {
-      const response = await fetch(`http://localhost:3333/locacoes/${id}`, {
-        method: 'DELETE',
-      });
-
-      if (response.ok) {
-        alert("Locação finalizada com sucesso!");
-        fetchAllData(); // Atualiza a lista removendo o item excluído
-      } else {
-        const errorData = await response.json();
-        alert(`Erro ao finalizar: ${errorData.error}`);
-      }
-    } catch (error) {
-      console.error("Erro ao finalizar:", error);
-      alert("Erro de conexão ao tentar finalizar.");
-    }
-    setActiveMenuRow(null); // Fecha o menu
-  };
-
   // --- Filtro Local ---
   const filteredLocacoes = locacoes.filter((l) => {
     const clienteNome = l.Usuario?.nome || '';
     const veiculoModelo = l.Veiculo?.modelo || '';
+    const veiculoPlaca = l.Veiculo?.placa || '';
     const termo = searchTerm.toLowerCase();
-    return clienteNome.toLowerCase().includes(termo) || veiculoModelo.toLowerCase().includes(termo);
+    return clienteNome.toLowerCase().includes(termo) || 
+           veiculoModelo.toLowerCase().includes(termo) ||
+           veiculoPlaca.toLowerCase().includes(termo);
   });
 
   // --- Status Badge ---
   const getStatusClass = (status) => {
     switch (status) {
-      case 'ATIVA': return 'status-alugado'; // Laranja
-      case 'CONCLUIDA': return 'status-disponivel'; // Verde
-      case 'CANCELADA': return 'status-manutencao'; // Vermelho
+      case 'ATIVA': return 'status-alugado';
+      case 'CONCLUIDA': return 'status-disponivel';
+      case 'CANCELADA': return 'status-manutencao';
       default: return '';
     }
   };
 
+  const formatStatus = (status) => {
+    const map = { 
+      'ATIVA': 'Ativa', 
+      'CONCLUIDA': 'Concluída', 
+      'CANCELADA': 'Cancelada' 
+    };
+    return map[status] || status;
+  };
+
   return (
     <div className="dashboard-container">
-      {/* --- Sidebar --- */}
       <aside className="sidebar">
         <div className="sidebar-logo">
-           {logoTrio ? <img src={logoTrio} alt="Trio Bit Garage" /> : <h3>Trio Bit</h3>}
+          {logoTrio ? <img src={logoTrio} alt="Trio Bit Garage" /> : <h3>Trio Bit</h3>}
         </div>
         <nav className="sidebar-menu">
           <div className="menu-item" onClick={() => navigate('/dashboard')}>
-            <IconDashboard />
-            <span>Dashboard</span>
+            <IconDashboard /><span>Dashboard</span>
           </div>
           <div className="menu-label">MENU</div>
           <div className="menu-item" onClick={() => navigate('/clients')}>
-            <IconClients />
-            <span>Clientes</span>
+            <IconClients /><span>Clientes</span>
           </div>
-          
-          {/* Ativo nesta tela */}
-          <div className="menu-item active" onClick={() => navigate('/locacoes')}>
-            <IconCarRental />
-            <span>Locação de Carros</span>
+          <div className="menu-item active" onClick={() => navigate('/locacoes')}> 
+            <IconCarRental /><span>Locação de Carros</span>
           </div>
-
-          <div className="menu-item" onClick={() => navigate('/veiculos')}>
-            <IconCar />
-            <span>Veículos</span>
+          <div className="menu-item" onClick={() => navigate('/veiculos')}> 
+            <IconCar /><span>Veículos</span>
           </div>
-
           <div className="menu-item" onClick={() => navigate('/pagamentos')}>
-            <IconPayment />
-            <span>Pagamentos</span>
+            <IconPayment /><span>Pagamentos</span>
           </div>
         </nav>
       </aside>
 
-      {/* --- Main Content --- */}
       <main className="main-content">
         <header className="top-header">
           <div className="header-welcome">
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <h2 style={{ margin: 0, fontSize: '1.5rem', color: '#333' }}>
-                {isCreating ? 'Novo aluguel' : 'Todas as locações'}
+                {isCreating ? (editingId ? 'Editar Locação' : 'Nova Locação') : 'Todas as locações'}
               </h2>
             </div>
             <p style={{ margin: 0, color: '#666', fontSize: '0.9rem' }}>
-              {isCreating ? 'Cadastrar novo aluguel' : 'Visualizar, pesquisar e adicionar novas locações'}
+              {isCreating ? 'Preencha os dados da locação' : 'Visualizar, pesquisar e gerenciar locações'}
             </p>
           </div>
-
           <div className="header-actions">
             <button className="btn-icon notification">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
@@ -213,34 +351,33 @@ const Locacao = ({ onLogout }) => {
               <div className="avatar">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
               </div>
-              <div className="user-info">
-                <span className="user-name">Luke S.</span>
-                <span className="user-role">Admin</span>
-              </div>
+              <div className="user-info"><span className="user-name">Luke S.</span><span className="user-role">Admin</span></div>
               <svg className={`chevron ${showUserDropdown ? 'rotate' : ''}`} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 9l6 6 6-6"/></svg>
               {showUserDropdown && (
-                 <div className="dropdown-menu">
-                   <div className="dropdown-item">Perfil</div>
-                   <div className="dropdown-item logout" onClick={onLogout}>Sair</div>
-                 </div>
+                <div className="dropdown-menu">
+                  <div className="dropdown-item">Perfil</div>
+                  <div className="dropdown-item logout" onClick={onLogout}>Sair</div>
+                </div>
               )}
             </div>
           </div>
         </header>
 
         {isCreating ? (
-          /* === FORMULÁRIO === */
+          /* === FORMULÁRIO (Criação ou Edição) === */
           <div className="client-form-container">
             <div 
                 style={{ display: 'flex', alignItems: 'center', color: '#FF914D', cursor: 'pointer', marginBottom: '20px', fontWeight: 500 }}
-                onClick={() => setIsCreating(false)}
+                onClick={resetForm}
             >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{marginRight: '5px'}}><polyline points="15 18 9 12 15 6"></polyline></svg>
                 Voltar
             </div>
 
             <form className="client-form" onSubmit={handleSave}>
-              <h3 style={{ margin: '0 0 20px 0', color: '#333' }}>Criar locação</h3>
+              <h3 style={{ margin: '0 0 20px 0', color: '#333' }}>
+                {editingId ? 'Editar dados da locação' : 'Adicionar nova locação'}
+              </h3>
 
               <div className="form-row">
                 <div className="form-group full-width">
@@ -261,7 +398,7 @@ const Locacao = ({ onLogout }) => {
 
               <div className="form-row">
                 <div className="form-group">
-                  <label>Data de Início</label>
+                  <label>Data de Retirada</label>
                   <input 
                     type="date"
                     name="data_retirada"
@@ -271,7 +408,7 @@ const Locacao = ({ onLogout }) => {
                   />
                 </div>
                 <div className="form-group">
-                  <label>Data de Entrega</label>
+                  <label>Data de Devolução</label>
                   <input 
                     type="date"
                     name="data_devolucao"
@@ -284,7 +421,7 @@ const Locacao = ({ onLogout }) => {
 
               <div className="form-row">
                 <div className="form-group">
-                  <label>Carro</label>
+                  <label>Veículo</label>
                   <select 
                     name="Veiculo_id" 
                     value={formData.Veiculo_id} 
@@ -293,8 +430,8 @@ const Locacao = ({ onLogout }) => {
                   >
                     <option value="" disabled>Selecione o veículo...</option>
                     {veiculos.map(v => (
-                      <option key={v.id} value={v.id} disabled={v.situacao !== 'DISPONIVEL'}>
-                        {v.modelo} - {v.placa} {v.situacao !== 'DISPONIVEL' ? '(Indisponível)' : ''}
+                      <option key={v.id} value={v.id} disabled={v.situacao !== 'DISPONIVEL' && !editingId}>
+                        {v.modelo} - {v.placa} {v.situacao !== 'DISPONIVEL' && !editingId ? '(Indisponível)' : ''}
                       </option>
                     ))}
                   </select>
@@ -313,9 +450,26 @@ const Locacao = ({ onLogout }) => {
                 </div>
               </div>
 
+              {/* Campo Status - EDITÁVEL tanto na criação quanto na edição */}
+              <div className="form-row">
+                <div className="form-group full-width">
+                  <label>Status</label>
+                  <select 
+                    name="status" 
+                    value={formData.status} 
+                    onChange={handleInputChange}
+                    required
+                  >
+                    <option value="ATIVA">Ativa</option>
+                    <option value="CONCLUIDA">Concluída</option>
+                    <option value="CANCELADA">Cancelada</option>
+                  </select>
+                </div>
+              </div>
+
               <div className="form-actions-bottom" style={{ justifyContent: 'center' }}>
                 <button type="submit" className="btn-save" style={{ width: '300px' }}>
-                  Adicionar
+                  {editingId ? 'Salvar Alterações' : 'Adicionar Locação'}
                 </button>
               </div>
             </form>
@@ -325,11 +479,11 @@ const Locacao = ({ onLogout }) => {
           <>
             <div className="clients-filters-card">
               <div className="filter-item search-box">
-                <label>Pesquisa rápida de um aluguel</label>
+                <label>Pesquisa rápida</label>
                 <div className="input-wrapper">
                   <input 
                     type="text" 
-                    placeholder="Digite id ou cliente..." 
+                    placeholder="Digite cliente, modelo ou placa..." 
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
@@ -339,15 +493,16 @@ const Locacao = ({ onLogout }) => {
 
               <div className="filter-item total-counter">
                 <h3>{locacoes.length}</h3>
-                <span>Total de aluguéis</span>
+                <span>Total de locações</span>
               </div>
 
               <div className="filter-item dropdown-filter">
-                <label>Filtrar locações</label>
+                <label>Filtrar</label>
                 <select>
                   <option>Todos</option>
                   <option>Ativas</option>
                   <option>Concluídas</option>
+                  <option>Canceladas</option>
                 </select>
               </div>
 
@@ -367,7 +522,7 @@ const Locacao = ({ onLogout }) => {
                   <tr>
                     <th>S/N</th>
                     <th>Cliente</th>
-                    <th>Carro (Modelo)</th>
+                    <th>Veículo (Modelo/Placa)</th>
                     <th>Retirada</th>
                     <th>Devolução</th>
                     <th>Valor (R$)</th>
@@ -382,21 +537,27 @@ const Locacao = ({ onLogout }) => {
                      <tr key={l.id}>
                        <td>{String(index + 1).padStart(2, '0')}</td>
                        <td>{l.Usuario?.nome || 'N/A'}</td>
-                       <td>{l.Veiculo?.modelo || 'N/A'}</td>
-                       <td>{new Date(l.data_retirada).toLocaleDateString()}</td>
-                       <td>{new Date(l.data_devolucao).toLocaleDateString()}</td>
-                       <td>{parseFloat(l.valor_total).toFixed(2)}</td>
+                       <td>{l.Veiculo?.modelo || 'N/A'} ({l.Veiculo?.placa || 'N/A'})</td>
+                       <td>{l.data_retirada ? new Date(l.data_retirada).toLocaleDateString() : 'N/A'}</td>
+                       <td>{l.data_devolucao ? new Date(l.data_devolucao).toLocaleDateString() : 'N/A'}</td>
+                       <td>{parseFloat(l.valor_total || 0).toFixed(2)}</td>
                        <td>
                           <span className={`status-badge ${getStatusClass(l.status)}`}>
-                            {l.status}
+                            {formatStatus(l.status)}
                           </span>
                        </td>
                        <td className="action-cell">
                          <span className="link-ver-mais" onClick={() => toggleRowMenu(l.id)}>Ver mais</span>
                          {activeMenuRow === l.id && (
                            <div className="action-menu-popover">
-                             {/* Alteração solicitada: Apenas opção Finalizar que deleta o registro */}
-                             <div className="popover-item" onClick={() => handleFinalizar(l.id)}>Finalizar</div>
+                             <div className="popover-item">Visualizar</div>
+                             <div className="popover-item" onClick={() => handleEdit(l)}>Editar</div>
+                             {l.status === 'ATIVA' && (
+                               <>
+                                 <div className="popover-item" onClick={() => handleConcluir(l.id)}>Concluir</div>
+                                 <div className="popover-item" onClick={() => handleCancelar(l.id)}>Cancelar</div>
+                               </>
+                             )}
                            </div>
                          )}
                        </td>
