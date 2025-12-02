@@ -464,15 +464,6 @@ const Locacao = ({ onLogout }) => {
                     <option value="CONCLUIDA">Concluída</option>
                     <option value="CANCELADA">Cancelada</option>
                   </select>
-                  {editingId && (
-                    <div style={{ fontSize: '0.8em', color: '#666', marginTop: '5px' }}>
-                      <strong>Atenção:</strong> Mudar o status altera automaticamente a situação do veículo:
-                      <ul style={{ margin: '5px 0 0 15px', padding: 0 }}>
-                        <li><strong>Ativa</strong> → Veículo fica <strong>ALUGADO</strong></li>
-                        <li><strong>Concluída/Cancelada</strong> → Veículo fica <strong>DISPONÍVEL</strong></li>
-                      </ul>
-                    </div>
-                  )}
                 </div>
               </div>
 
