@@ -189,9 +189,17 @@ const Locacao = ({ onLogout }) => {
     setActiveMenuRow(null);
   };
 
-  // --- Excluir Locação (se não houver pagamentos) ---
-  const handleDelete = async (id) => {
-    if (!window.confirm("Tem certeza que deseja EXCLUIR esta locação? (Só funciona se não houver pagamentos vinculados)")) {
+  // --- Excluir Locação (APENAS se status for CONCLUIDA ou CANCELADA) ---
+  const handleDelete = async (id, statusAtual) => {
+    // VERIFICAÇÃO: Só pode excluir se status for CONCLUIDA ou CANCELADA
+    if (statusAtual !== 'CONCLUIDA' && statusAtual !== 'CANCELADA') {
+      alert(`Não é possível excluir uma locação com status "${formatStatus(statusAtual)}".\nSó é permitido excluir locações "Concluídas" ou "Canceladas".`);
+      setActiveMenuRow(null);
+      return;
+    }
+
+    if (!window.confirm(`Tem certeza que deseja EXCLUIR esta locação ${formatStatus(statusAtual).toLowerCase()}?`)) {
+      setActiveMenuRow(null);
       return;
     }
 
@@ -205,13 +213,11 @@ const Locacao = ({ onLogout }) => {
         fetchAllData();
       } else {
         const errorData = await response.json();
-        // Se não puder excluir por causa de pagamentos, oferece cancelar
-        if (errorData.error.includes('foreign key constraint')) {
-          if (window.confirm("Não é possível excluir locação com pagamentos. Deseja cancelá-la em vez disso?")) {
-            await handleCancelar(id);
-          }
+        // Se não puder excluir por causa de pagamentos
+        if (errorData.error && errorData.error.includes('foreign key constraint')) {
+          alert("Não é possível excluir esta locação porque existem pagamentos vinculados a ela.");
         } else {
-          alert(`Erro ao excluir: ${errorData.error}`);
+          alert(`Erro ao excluir: ${errorData.error || 'Erro desconhecido'}`);
         }
       }
     } catch (error) {
@@ -225,12 +231,41 @@ const Locacao = ({ onLogout }) => {
   const handleSave = async (e) => {
     e.preventDefault();
 
-    const payload = {
-      ...formData,
-      Usuario_id: parseInt(formData.Usuario_id),
-      Veiculo_id: parseInt(formData.Veiculo_id),
-      valor_total: parseFloat(formData.valor_total) || 0
-    };
+    // Se estiver editando, manter o status original
+    let payload;
+    if (editingId) {
+      // Buscar a locação atual para manter o status original
+      try {
+        const response = await fetch(`http://localhost:3333/locacoes/${editingId}`);
+        const locacaoAtual = await response.json();
+        
+        payload = {
+          ...formData,
+          Usuario_id: parseInt(formData.Usuario_id),
+          Veiculo_id: parseInt(formData.Veiculo_id),
+          valor_total: parseFloat(formData.valor_total) || 0,
+          // MANTER o status original ao editar (não alterar)
+          status: locacaoAtual.status || formData.status
+        };
+      } catch (error) {
+        console.error("Erro ao buscar locação atual:", error);
+        // Fallback: usar o status do formulário
+        payload = {
+          ...formData,
+          Usuario_id: parseInt(formData.Usuario_id),
+          Veiculo_id: parseInt(formData.Veiculo_id),
+          valor_total: parseFloat(formData.valor_total) || 0
+        };
+      }
+    } else {
+      // Nova locação: usar status do formulário
+      payload = {
+        ...formData,
+        Usuario_id: parseInt(formData.Usuario_id),
+        Veiculo_id: parseInt(formData.Veiculo_id),
+        valor_total: parseFloat(formData.valor_total) || 0
+      };
+    }
 
     // Define se é POST (criar) ou PUT (editar)
     const url = editingId 
@@ -435,19 +470,42 @@ const Locacao = ({ onLogout }) => {
                 </div>
               </div>
 
+              {/* Campo Status - VISÍVEL mas DESABILITADO quando editando */}
               <div className="form-row">
                 <div className="form-group full-width">
-                  <label>Status</label>
-                  <select 
-                    name="status" 
-                    value={formData.status} 
-                    onChange={handleInputChange}
-                    required
-                  >
-                    <option value="ATIVA">Ativa</option>
-                    <option value="CONCLUIDA">Concluída</option>
-                    <option value="CANCELADA">Cancelada</option>
-                  </select>
+                  <label>
+                    Status 
+                    {editingId && <span style={{ fontSize: '0.8em', color: '#666', marginLeft: '5px' }}>(não editável)</span>}
+                  </label>
+                  {editingId ? (
+                    // Quando editando: campo readonly que mostra o status atual
+                    <input 
+                      type="text"
+                      value={formatStatus(formData.status)}
+                      readOnly
+                      disabled
+                      style={{ 
+                        padding: '12px 15px', 
+                        borderRadius: '8px', 
+                        border: '1px solid #E0E0E0', 
+                        backgroundColor: '#f5f5f5',
+                        color: '#666',
+                        cursor: 'not-allowed'
+                      }}
+                    />
+                  ) : (
+                    // Quando criando novo: select normal
+                    <select 
+                      name="status" 
+                      value={formData.status} 
+                      onChange={handleInputChange}
+                      required
+                    >
+                      <option value="ATIVA">Ativa</option>
+                      <option value="CONCLUIDA">Concluída</option>
+                      <option value="CANCELADA">Cancelada</option>
+                    </select>
+                  )}
                 </div>
               </div>
 
@@ -542,7 +600,10 @@ const Locacao = ({ onLogout }) => {
                                  <div className="popover-item" onClick={() => handleCancelar(l.id)}>Cancelar</div>
                                </>
                              )}
-                             <div className="popover-item" onClick={() => handleDelete(l.id)} style={{color: 'red'}}>Excluir</div>
+                             {/* Excluir só aparece para status CONCLUIDA ou CANCELADA */}
+                             {(l.status === 'CONCLUIDA' || l.status === 'CANCELADA') && (
+                               <div className="popover-item" onClick={() => handleDelete(l.id, l.status)} style={{color: 'red'}}>Excluir</div>
+                             )}
                            </div>
                          )}
                        </td>
