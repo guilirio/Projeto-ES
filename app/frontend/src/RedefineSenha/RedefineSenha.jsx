@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./redefineSenha.css";
+import "./RedefineSenha.css";
 import logoTrio from "../assets/logo.svg";
 
 const RedefineSenha = ({ onBackToLogin }) => {

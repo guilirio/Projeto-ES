@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import './verificationEmail.css';
+import './VerificationEmail.css';
 import logoTrio from '../assets/logo.svg';
 
 const VerificationEmail = ({ onRegister, onBackToForgot, onCodeVerified }) => {

@@ -5,7 +5,7 @@ import Login from './Login/login.jsx';
 import Forgot from './Forgot/forgot.jsx';
 import VerificationEmail from './VerificacaoEmail/VerificationEmail.jsx';
 import RedefineSenha from './RedefineSenha/RedefineSenha.jsx';
-import Register from './Register/Register.jsx';
+import Register from './Register/register.jsx';
 import Dashboard from './Dashboard/dashboard.jsx';
 import Clients from './Clients/clients.jsx';
 // Importação do componente de Veículo
