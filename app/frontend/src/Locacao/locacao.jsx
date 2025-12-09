@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import '../Veiculo/veiculo.css'; 
 import logoTrio from '../assets/logo.svg'; 
 
-// Ícones (Mesmos do original)
+// Ícones
 const IconDashboard = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>;
 const IconClients = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>;
 const IconCar = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 16H9m10 0h3v-3.15M7 16H4v-3.15M21 9l-2-6H5L3 9h18z"></path><rect x="3" y="9" width="18" height="9" rx="2"></rect><circle cx="7" cy="14" r="2"></circle><circle cx="17" cy="14" r="2"></circle></svg>;
@@ -16,7 +16,7 @@ const Locacao = ({ onLogout }) => {
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const [activeMenuRow, setActiveMenuRow] = useState(null);
   const [isCreating, setIsCreating] = useState(false);
-  const [editingId, setEditingId] = useState(null); // NOVO: Edição
+  const [editingId, setEditingId] = useState(null);
 
   const [locacoes, setLocacoes] = useState([]);
   const [clientes, setClientes] = useState([]);
@@ -77,7 +77,6 @@ const Locacao = ({ onLogout }) => {
 
   // --- Editar Locação ---
   const handleEdit = (locacao) => {
-    // Formata datas para o input type="date" (yyyy-MM-dd)
     const formatData = (isoString) => isoString ? isoString.split('T')[0] : '';
     
     setFormData({
@@ -137,7 +136,6 @@ const Locacao = ({ onLogout }) => {
     }
 
     try {
-      // Usa método PUT para atualizar o status, não DELETE
       const response = await fetch(`http://localhost:3333/locacoes/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -158,6 +156,32 @@ const Locacao = ({ onLogout }) => {
     setActiveMenuRow(null);
   };
 
+  // --- NOVO: Excluir Locação ---
+  const handleDelete = async (id) => {
+    if (!window.confirm("Tem certeza que deseja excluir permanentemente esta locação do banco de dados?")) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:3333/locacoes/${id}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      if (response.ok) {
+        alert("Locação excluída com sucesso!");
+        fetchAllData(); // Atualiza a lista
+      } else {
+        const errorData = await response.json();
+        alert(`Erro ao excluir: ${errorData.error}`);
+      }
+    } catch (error) {
+      console.error("Erro ao excluir:", error);
+      alert("Erro de conexão ao tentar excluir.");
+    }
+    setActiveMenuRow(null);
+  };
+
   const getStatusClass = (status) => {
     switch (status) {
       case 'ATIVA': return 'status-alugado'; 
@@ -167,7 +191,6 @@ const Locacao = ({ onLogout }) => {
     }
   };
 
-  // --- Filtro e Ordenação (Ativas primeiro) ---
   const filteredLocacoes = locacoes
     .filter((l) => {
       const clienteNome = l.Usuario?.nome || '';
@@ -176,10 +199,9 @@ const Locacao = ({ onLogout }) => {
       return clienteNome.toLowerCase().includes(termo) || veiculoModelo.toLowerCase().includes(termo);
     })
     .sort((a, b) => {
-      // Ordenação: Se 'a' é ATIVA e 'b' não é, 'a' vem primeiro (-1)
       if (a.status === 'ATIVA' && b.status !== 'ATIVA') return -1;
       if (a.status !== 'ATIVA' && b.status === 'ATIVA') return 1;
-      return 0; // Se forem iguais mantém ordem original (ou pode ordenar por data)
+      return 0; 
     });
 
   return (
@@ -249,7 +271,6 @@ const Locacao = ({ onLogout }) => {
               <div className="form-row">
                 <div className="form-group">
                   <label>Carro</label>
-                  {/* Se for edição, permite manter o carro atual mesmo se ele não estiver 'DISPONIVEL' no filtro geral */}
                   <select name="Veiculo_id" value={formData.Veiculo_id} onChange={handleInputChange} required>
                     <option value="" disabled>Selecione o veículo...</option>
                     {veiculos.map(v => (
@@ -315,6 +336,8 @@ const Locacao = ({ onLogout }) => {
                              {l.status === 'ATIVA' && (
                                 <div className="popover-item" onClick={() => handleFinalizar(l.id)} style={{color: '#28a745'}}>Finalizar</div>
                              )}
+                             {/* Botão de Excluir Adicionado */}
+                             <div className="popover-item" onClick={() => handleDelete(l.id)} style={{color: '#dc3545', borderTop: '1px solid #eee'}}>Excluir</div>
                            </div>
                          )}
                        </td>
