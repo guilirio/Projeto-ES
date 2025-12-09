@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import './login.css';
 
-// IMPORTANTE: O React não lê caminhos como "C:\Users...".
-// Use o caminho relativo a partir de onde este arquivo (login.jsx) está salvo.
-// Exemplo: Se login.jsx está em 'src/pages', e a logo em 'src/assets', use '../assets/logo.svg'
 import logoTrio from '../assets/logo.svg'; 
 
-// Recebendo as funções de navegação via props, INCLUINDO onLoginSuccess
 const Login = ({ onForgotPassword, onRegister, onLoginSuccess }) => {
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // Estado para controlar o carregamento
+  
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -27,28 +25,57 @@ const Login = ({ onForgotPassword, onRegister, onLoginSuccess }) => {
     });
   };
 
-  const handleSubmit = (e) => {
+  // --- Função de Login Atualizada ---
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Dados do login:', formData);
-    
-    // Simulação de autenticação bem-sucedida
-    // Aqui você validaria o usuário/senha com seu backend
-    
-    // Se sucesso, chama a função de navegação para o Dashboard:
-    if (onLoginSuccess) {
-      onLoginSuccess();
+    setIsLoading(true); // Ativa o loading
+
+    try {
+      // Monta o objeto JSON como o backend espera
+      const payload = {
+        email: formData.email,
+        senha: formData.password
+      };
+
+      // Faz a requisição POST
+      const response = await fetch('http://localhost:3333/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      // Verifica a resposta
+      if (response.ok) {
+        // Se o status for 200/201, o login foi aprovado
+        // Se o backend retornar algum dado (token, user id), você pode pegar aqui:
+        // const data = await response.json(); 
+        
+        // Chama a função de sucesso para redirecionar
+        if (onLoginSuccess) {
+          onLoginSuccess();
+        }
+      } else {
+        // Se a senha ou email estiverem errados (Status 400, 401, etc)
+        const errorData = await response.json();
+        alert(errorData.error || "Email ou senha incorretos.");
+      }
+    } catch (error) {
+      console.error("Erro no login:", error);
+      alert("Erro de conexão com o servidor. Verifique se o backend está rodando.");
+    } finally {
+      setIsLoading(false); // Desativa o loading independentemente do resultado
     }
   };
 
   return (
     <div className="main-wrapper">
-      {/* Barra laranja superior (apenas estético) */}
       <div className="orange-strip"></div>
 
       <div className="content-area">
         <div className="login-card">
           
-          {/* Header do Card com Botão Criar Conta */}
           <header className="card-header">
             <button 
               type="button" 
@@ -61,7 +88,6 @@ const Login = ({ onForgotPassword, onRegister, onLoginSuccess }) => {
 
           <main className="login-card-body">
             
-            {/* LOGO AGORA AQUI - Centralizada acima do título */}
             <div className="logo-section">
               <img src={logoTrio} alt="Trio Bit Garage" className="card-logo" />
             </div>
@@ -141,8 +167,13 @@ const Login = ({ onForgotPassword, onRegister, onLoginSuccess }) => {
                 </a>
               </div>
 
-              <button type="submit" className="btn-submit">
-                Entrar
+              <button 
+                type="submit" 
+                className="btn-submit" 
+                disabled={isLoading} // Desabilita se estiver carregando
+                style={{ opacity: isLoading ? 0.7 : 1, cursor: isLoading ? 'wait' : 'pointer' }}
+              >
+                {isLoading ? 'Entrando...' : 'Entrar'}
               </button>
             </form>
           </main>
