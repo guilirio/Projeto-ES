@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './clients.css';
 import logoTrio from '../assets/logo.svg';
 
-// Ícones
+// Ícones (Mantinham-se os mesmos)
 const IconDashboard = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>;
 const IconClients = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>;
 const IconCar = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 16H9m10 0h3v-3.15M7 16H4v-3.15M21 9l-2-6H5L3 9h18z"></path><rect x="3" y="9" width="18" height="9" rx="2"></rect><circle cx="7" cy="14" r="2"></circle><circle cx="17" cy="14" r="2"></circle></svg>;
@@ -13,26 +13,27 @@ const IconCarRental = () => <svg width="20" height="20" viewBox="0 0 24 24" fill
 const Clients = ({ onLogout }) => {
   const navigate = useNavigate();
   
-  // --- Estados ---
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const [activeMenuRow, setActiveMenuRow] = useState(null);
   const [isCreating, setIsCreating] = useState(false);
+  const [editingId, setEditingId] = useState(null); // NOVO: Controle de edição
+
   const [clientes, setClientes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
 
-  // --- Estado do Formulário ---
-  const [formData, setFormData] = useState({
+  const initialFormState = {
     nome: '',
     cpf: '',
     cnh: '',
     email: '',
     telefone: '',
-    senha: '123', // Senha padrão para facilitar cadastro rápido
-    perfil: 'CLIENTE' // Fixo como Cliente
-  });
+    senha: '123',
+    perfil: 'CLIENTE'
+  };
 
-  // --- Carregar Dados (GET) ---
+  const [formData, setFormData] = useState(initialFormState);
+
   useEffect(() => {
     fetchClientes();
   }, []);
@@ -42,7 +43,6 @@ const Clients = ({ onLogout }) => {
       setLoading(true);
       const response = await fetch('http://localhost:3333/usuarios');
       const data = await response.json();
-      // Filtra para mostrar apenas CLIENTES na lista, ignorando Admins
       const apenasClientes = data.filter(user => user.perfil === 'CLIENTE');
       setClientes(apenasClientes);
     } catch (error) {
@@ -52,22 +52,56 @@ const Clients = ({ onLogout }) => {
     }
   };
 
-  // --- Salvar Cliente (POST) ---
+  // --- Resetar Formulário ---
+  const resetForm = () => {
+    setFormData(initialFormState);
+    setIsCreating(false);
+    setEditingId(null);
+    setActiveMenuRow(null);
+  };
+
+  // --- Preparar Edição ---
+  const handleEdit = (cliente) => {
+    setFormData({
+      nome: cliente.nome,
+      cpf: cliente.cpf,
+      cnh: cliente.cnh,
+      email: cliente.email,
+      telefone: cliente.telefone || '',
+      senha: cliente.senha || '', // Backend não retorna senha, manter vazio ou tratar se necessário
+      perfil: 'CLIENTE'
+    });
+    setEditingId(cliente.id);
+    setIsCreating(true);
+    setActiveMenuRow(null);
+  };
+
+  // --- Salvar (Criar ou Editar) ---
   const handleSave = async (e) => {
     e.preventDefault();
     
+    // Define URL e Método baseado se é edição ou criação
+    const url = editingId 
+      ? `http://localhost:3333/usuarios/${editingId}` 
+      : 'http://localhost:3333/usuarios';
+    
+    const method = editingId ? 'PUT' : 'POST';
+
+    // Remove a senha do payload se for edição e estiver vazia (para não sobrescrever)
+    const payload = { ...formData };
+    if (editingId && !payload.senha) delete payload.senha;
+
     try {
-      const response = await fetch('http://localhost:3333/usuarios', {
-        method: 'POST',
+      const response = await fetch(url, {
+        method: method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(payload)
       });
 
       if (response.ok) {
-        alert('Cliente cadastrado com sucesso!');
-        setFormData({ nome: '', cpf: '', cnh: '', email: '', telefone: '', senha: '123', perfil: 'CLIENTE' });
-        setIsCreating(false);
-        fetchClientes(); // Recarrega a lista
+        alert(editingId ? 'Cliente atualizado com sucesso!' : 'Cliente cadastrado com sucesso!');
+        resetForm();
+        fetchClientes();
       } else {
         const errorData = await response.json();
         alert(`Erro: ${errorData.error}`);
@@ -78,15 +112,10 @@ const Clients = ({ onLogout }) => {
     }
   };
 
-  // --- Excluir Cliente ---
   const handleDelete = async (id) => {
     if (!window.confirm("Tem certeza que deseja excluir este cliente?")) return;
-
     try {
-      const response = await fetch(`http://localhost:3333/usuarios/${id}`, {
-        method: 'DELETE',
-      });
-
+      const response = await fetch(`http://localhost:3333/usuarios/${id}`, { method: 'DELETE' });
       if (response.ok) {
         alert("Cliente excluído com sucesso!");
         fetchClientes();
@@ -95,75 +124,47 @@ const Clients = ({ onLogout }) => {
         alert(`Erro ao excluir: ${errorData.error}`);
       }
     } catch (error) {
-      console.error("Erro ao excluir:", error);
       alert("Erro de conexão.");
     }
     setActiveMenuRow(null);
   };
 
-  // --- Filtro Local ---
   const filteredClients = clientes.filter((c) =>
     (c.nome || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
     (c.cpf || '').includes(searchTerm)
   );
 
   const toggleRowMenu = (id) => setActiveMenuRow(activeMenuRow === id ? null : id);
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
+  const handleInputChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
   return (
     <div className="dashboard-container">
       <aside className="sidebar">
-        <div className="sidebar-logo">
-          {logoTrio ? <img src={logoTrio} alt="Trio Bit Garage" /> : <h3>Trio Bit</h3>}
-        </div>
+        <div className="sidebar-logo">{logoTrio ? <img src={logoTrio} alt="Trio Bit" /> : <h3>Trio Bit</h3>}</div>
         <nav className="sidebar-menu">
-          <div className="menu-item" onClick={() => navigate('/dashboard')}>
-            <IconDashboard /><span>Dashboard</span>
-          </div>
-          <div className="menu-label">MENU</div>
-          <div className="menu-item active">
-            <IconClients /><span>Clientes</span>
-          </div>
-          <div className="menu-item" onClick={() => navigate('/locacoes')}>
-            <IconCarRental /><span>Locação de Carros</span>
-          </div>
-          <div className="menu-item" onClick={() => navigate('/veiculos')}>
-            <IconCar /><span>Veículos</span>
-          </div>
-          <div className="menu-item" onClick={() => navigate('/pagamentos')}>
-            <IconPayment /><span>Pagamentos</span>
-          </div>
+           {/* Menu Items iguais ao original... */}
+           <div className="menu-item" onClick={() => navigate('/dashboard')}><IconDashboard /><span>Dashboard</span></div>
+           <div className="menu-label">MENU</div>
+           <div className="menu-item active"><IconClients /><span>Clientes</span></div>
+           <div className="menu-item" onClick={() => navigate('/locacoes')}><IconCarRental /><span>Locação de Carros</span></div>
+           <div className="menu-item" onClick={() => navigate('/veiculos')}><IconCar /><span>Veículos</span></div>
+           <div className="menu-item" onClick={() => navigate('/pagamentos')}><IconPayment /><span>Pagamentos</span></div>
         </nav>
       </aside>
 
       <main className="main-content">
         <header className="top-header">
-          <div className="header-welcome">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            {/* Header igual ao original */}
+            <div className="header-welcome">
               <h2 style={{ margin: 0, fontSize: '1.5rem', color: '#333' }}>
-                {isCreating ? 'Cadastro de Cliente' : 'Todos os clientes'}
+                {isCreating ? (editingId ? 'Editar Cliente' : 'Cadastro de Cliente') : 'Todos os clientes'}
               </h2>
             </div>
-            <p style={{ margin: 0, color: '#666', fontSize: '0.9rem' }}>
-              {isCreating ? 'Preencha os dados do novo cliente' : 'Gerenciamento de clientes da locadora'}
-            </p>
-          </div>
-
-          <div className="header-actions">
+            <div className="header-actions">
             <div className="user-profile" onClick={() => setShowUserDropdown(!showUserDropdown)}>
-              <div className="avatar">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-              </div>
+              <div className="avatar"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>
               <div className="user-info"><span className="user-name">Luke S.</span><span className="user-role">Admin</span></div>
-              {showUserDropdown && (
-                <div className="dropdown-menu">
-                  <div className="dropdown-item logout" onClick={onLogout}>Sair</div>
-                </div>
-              )}
+              {showUserDropdown && (<div className="dropdown-menu"><div className="dropdown-item logout" onClick={onLogout}>Sair</div></div>)}
             </div>
           </div>
         </header>
@@ -172,7 +173,7 @@ const Clients = ({ onLogout }) => {
           <div className="client-form-container">
             <div 
                 style={{ display: 'flex', alignItems: 'center', color: '#FF914D', cursor: 'pointer', marginBottom: '20px', fontWeight: 500 }}
-                onClick={() => setIsCreating(false)}
+                onClick={resetForm}
             >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{marginRight: '5px'}}><polyline points="15 18 9 12 15 6"></polyline></svg>
                 Voltar
@@ -182,37 +183,36 @@ const Clients = ({ onLogout }) => {
               <div className="form-row">
                 <div className="form-group">
                   <label>Nome Completo</label>
-                  <input name="nome" placeholder="Ex: Maria Silva" value={formData.nome} onChange={handleInputChange} required />
+                  <input name="nome" value={formData.nome} onChange={handleInputChange} required />
                 </div>
                 <div className="form-group">
                   <label>CPF</label>
-                  <input name="cpf" placeholder="000.000.000-00" value={formData.cpf} onChange={handleInputChange} required maxLength="11"/>
+                  <input name="cpf" value={formData.cpf} onChange={handleInputChange} required maxLength="14"/>
                 </div>
               </div>
 
               <div className="form-row">
                 <div className="form-group">
                   <label>CNH</label>
-                  <input name="cnh" placeholder="Número da CNH" value={formData.cnh} onChange={handleInputChange} required maxLength="11"/>
+                  <input name="cnh" value={formData.cnh} onChange={handleInputChange} required maxLength="11"/>
                 </div>
                 <div className="form-group">
                   <label>Telefone</label>
-                  <input name="telefone" placeholder="(00) 00000-0000" value={formData.telefone} onChange={handleInputChange} />
+                  <input name="telefone" value={formData.telefone} onChange={handleInputChange} />
                 </div>
               </div>
 
               <div className="form-row">
                 <div className="form-group full-width">
                   <label>Email</label>
-                  <input type="email" name="email" placeholder="exemplo@email.com" value={formData.email} onChange={handleInputChange} required />
+                  <input type="email" name="email" value={formData.email} onChange={handleInputChange} required />
                 </div>
               </div>
               
-              {/* Campo oculto de senha e perfil */}
-              <input type="hidden" name="perfil" value="CLIENTE" />
-
               <div className="form-actions-bottom">
-                <button type="submit" className="btn-save">Salvar Cliente</button>
+                <button type="submit" className="btn-save">
+                  {editingId ? 'Salvar Alterações' : 'Salvar Cliente'}
+                </button>
               </div>
             </form>
           </div>
@@ -234,21 +234,11 @@ const Clients = ({ onLogout }) => {
             </div>
 
             <div className="clients-table-container">
-              <div className="table-header">
-                <h3>Todos os clientes</h3>
-                <div className="pagination-info">Mostrando <span className="highlight">10</span> por página</div>
-              </div>
-              
               <table className="clients-table">
-                <thead>
-                  <tr>
-                    <th>S/N</th><th>Nome</th><th>CPF</th><th>CNH</th><th>Email</th><th>Ação</th>
-                  </tr>
-                </thead>
+                <thead><tr><th>S/N</th><th>Nome</th><th>CPF</th><th>CNH</th><th>Email</th><th>Ação</th></tr></thead>
                 <tbody>
-                  {loading ? (
-                    <tr><td colSpan="6" style={{textAlign: 'center', padding: '20px'}}>Carregando...</td></tr>
-                  ) : filteredClients.map((client, index) => (
+                  {loading ? (<tr><td colSpan="6" style={{textAlign: 'center'}}>Carregando...</td></tr>) : 
+                  filteredClients.map((client, index) => (
                     <tr key={client.id}>
                       <td>{String(index + 1).padStart(2, '0')}</td>
                       <td>{client.nome}</td>
@@ -259,6 +249,8 @@ const Clients = ({ onLogout }) => {
                         <span className="link-ver-mais" onClick={() => toggleRowMenu(client.id)}>Ver mais</span>
                         {activeMenuRow === client.id && (
                           <div className="action-menu-popover">
+                            {/* NOVO: Botão Editar */}
+                            <div className="popover-item" onClick={() => handleEdit(client)}>Editar</div>
                             <div className="popover-item" onClick={() => handleDelete(client.id)} style={{color: 'red'}}>Excluir</div>
                           </div>
                         )}
@@ -274,5 +266,4 @@ const Clients = ({ onLogout }) => {
     </div>
   );
 };
-
 export default Clients;
