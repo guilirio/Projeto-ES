@@ -5,14 +5,20 @@ import './forgot.css';
 import logoTrio from '../assets/logo.svg';
 
 // Recebendo as props de navegação
-const Forgot = ({ onRegister, onBackToLogin }) => {
+const Forgot = ({ onRegister, onBackToLogin, onCodeSent }) => {
   const [email, setEmail] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     console.log('Solicitar recuperação para:', email);
-    // Lógica de envio do código de recuperação
+
+    // Aqui você chama a próxima tela
+    if (onCodeSent) {
+      onCodeSent(); // navega para VerificationEmail
+    }
   };
+
 
   return (
     <div className="main-wrapper">

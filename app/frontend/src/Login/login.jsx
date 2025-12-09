@@ -4,6 +4,8 @@ import logoTrio from '../assets/logo.svg';
 
 const Login = ({ onForgotPassword, onRegister, onLoginSuccess }) => {
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // Estado para controlar o carregamento
+  
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -18,34 +20,16 @@ const Login = ({ onForgotPassword, onRegister, onLoginSuccess }) => {
     setFormData({ ...formData, [name]: type === 'checkbox' ? checked : value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    setErrorMsg('');
-
-    try {
-      const response = await fetch('http://localhost:3333/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: formData.email,
-          senha: formData.password 
-        })
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        // Sucesso: Chama a função do pai para mudar a tela
-        if (onLoginSuccess) {
-          onLoginSuccess(data.usuario);
-        }
-      } else {
-        // Erro (ex: senha errada, sem permissão)
-        setErrorMsg(data.error || 'Erro ao fazer login.');
-      }
-    } catch (error) {
-      console.error('Erro de conexão:', error);
-      setErrorMsg('Servidor indisponível. Tente novamente mais tarde.');
+    console.log('Dados do login:', formData);
+    
+    // Simulação de autenticação bem-sucedida
+    // Aqui você validaria o usuário/senha com seu backend
+    
+    // Se sucesso, chama a função de navegação para o Dashboard:
+    if (onLoginSuccess) {
+      onLoginSuccess();
     }
   };
 
@@ -54,12 +38,19 @@ const Login = ({ onForgotPassword, onRegister, onLoginSuccess }) => {
       <div className="orange-strip"></div>
       <div className="content-area">
         <div className="login-card">
+          
+          {/* Header do Card com Botão Criar Conta */}
           <header className="card-header">
             <button type="button" className="btn-create-account" onClick={onRegister}>Criar Conta</button>
           </header>
 
           <main className="login-card-body">
-            <div className="logo-section"><img src={logoTrio} alt="Trio Bit Garage" className="card-logo" /></div>
+            
+            {/* LOGO AGORA AQUI - Centralizada acima do título */}
+            <div className="logo-section">
+              <img src={logoTrio} alt="Trio Bit Garage" className="card-logo" />
+            </div>
+
             <div className="welcome-text">
               <span className="welcome-sub">Bem vindo ao Trio Bit Garage</span>
               <h1 className="login-title">Faça o login</h1>
@@ -92,7 +83,9 @@ const Login = ({ onForgotPassword, onRegister, onLoginSuccess }) => {
                 <a href="#" className="forgot-password" onClick={(e) => {e.preventDefault(); onForgotPassword();}}>Eu esqueci minha senha</a>
               </div>
 
-              <button type="submit" className="btn-submit">Entrar</button>
+              <button type="submit" className="btn-submit">
+                Entrar
+              </button>
             </form>
           </main>
         </div>
